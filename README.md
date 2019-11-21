@@ -10,9 +10,9 @@ TIP: I have included a forked version in the spRestLib folder as I still use the
 
 2) Host a legacy or Sharepoint 2013 web page on your sharepoint server; we use Sharepoint 365 which allows for using an 'old' style Sharepoint site. You can look up directions to hosting a 'legacy' Sharepoint site on Office 365.
 3) Add a web part to the page; I chose a full-width Style page for best viewing
-	3a) You will want to add a Script Editor into the web part; see [Image]().
+	3a) You will want to add a Script Editor into the web part; see [Image](https://github.com/JAZConsulting/CAS-VendorRepSearch/blob/master/vendor%20rep%20search/assets/images/setup-1.png).
 	3b) Paste the contents of 'index.html' into the script editor and press apply/ok.
-4) You should be able to see the HTML Code in your sharepoint site; see [Image]().
+4) You should be able to see the HTML Code in your sharepoint site; see [Image](https://github.com/JAZConsulting/CAS-VendorRepSearch/blob/master/vendor%20rep%20search/assets/images/setup-2.png).
 
 ## Modifying this project
 This is a pretty nice base to start from if you are looking for a similar functionality. The index file can easily be altered to support your own Sharepoint lists.Start with modifying:
