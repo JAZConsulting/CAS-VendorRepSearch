@@ -724,11 +724,11 @@ body{font-family: Roboto;}blockquote{border-color: #f9d5bd;}.display-1{font-fami
 		base: "https://centralazsupply.sharepoint.com",
 		vlist = {
 			relativeList: 		"/sites/Sales/Lists/Vendor%20List/Default%20View.aspx",
-			relativeItem: 		"/sites/dev/Lists/Vendor%20List/DispForm.aspx?ID="  
+			relativeItem: 		"/sites/Sales/Lists/Vendor%20List/DispForm.aspx?ID="  
 		},
 		vclist = {
 			relativeList: 		"/sites/Sales/Lists/Vendor%20Contact%20List/Default%20View.aspx",
-			relativeItem: 		"/sites/dev/Lists/Vendor%20Contact%20List/DispForm.aspx?ID="  
+			relativeItem: 		"/sites/Sales/Lists/Vendor%20Contact%20List/DispForm.aspx?ID="  
 		},
 	};
 
@@ -751,7 +751,7 @@ body{font-family: Roboto;}blockquote{border-color: #f9d5bd;}.display-1{font-fami
 				Link: 				{ dataFunc:  objItem => ReferenceMaster.vlist.relativeItem+objItem.ID }                 
 
 			},
-			// queryFilter will be added dynamically with myFields to Search combined with the user input
+			// queryFilter will be concatenated with myFieldsToSearch combined with the user input in a substring of command
 			// Example!
 			// queryFilter: "substringof('grohe', Title) or substringof('faucet',Keywords) or substringof('180',VendorNum)",
 			queryFilter: ''
