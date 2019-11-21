@@ -758,7 +758,8 @@ body{font-family: Roboto;}blockquote{border-color: #f9d5bd;}.display-1{font-fami
 			queryOrderBy: 'Title',
 			queryLimit: 300,
 			// Keep track of which fields in vlist we want to search when we search
-			myFieldsToSearch: ['Title', 'VendorNum', 'Keywords']
+			myFieldsToSearch: ['Title', 'VendorNum', 'Keywords'],
+			myName: 'Vendor List'
 		},
 		vclist: {
 			listCols :  {
@@ -821,13 +822,16 @@ body{font-family: Roboto;}blockquote{border-color: #f9d5bd;}.display-1{font-fami
 		};
 		try{
 			var input = $('#searchInput').val();
-			// Need to perform in asyncronous call for each list
+			// TODO: Need to perform in asyncronous call for each list
 			var search = ListMaster.vlist;
 			search.myFieldsToSearch.forEach( (element, index, arr) => { 
 				index !== arr.length - 1;
 				? search.queryFilter += "substringof('" + input +"', "+ element +") or "
 				: search.queryFilter += "substringof('" + input +"', "+ element +")";
 			});
+
+			sprLib.
+
 		}
 		catch(err){
 			obj.message = 'Error occurred: ' + err;

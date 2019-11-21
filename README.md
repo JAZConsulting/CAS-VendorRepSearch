@@ -17,11 +17,11 @@ TIP: I have included a forked version in the spRestLib folder as I still use the
 ## Modifying this project
 This is a pretty nice base to start from if you are looking for a similar functionality. The index file can easily be altered to support your own Sharepoint lists.Start with modifying:
 * ListMaster && ReferenceMaster JSON Objects
- * * these hold quick references to your sharepoint list meta data like links to lists and list items
+  * these hold quick references to your sharepoint list meta data like links to lists and list items
  * * be sure to alter/remove the callback functions and reference your own sharepoint list field names
 * Commented HTML Code Tables and List Names
- * * there are 6 lists that we use; you should alter each accordion item appropriately with your own sharepoint list data. DON'T FORGET TO EDIT THE LINKS!
+  * there are 6 lists that we use; you should alter each accordion item appropriately with your own sharepoint list data. DON'T FORGET TO EDIT THE LINKS!
 * Your sharepoint lists. 
- * * Because of the fact that we run this on the sharepoint server as a script, the application user's own credential will be used to access the sharepoint lists, therefore, take care to provide permissions to each user that needs access to the appropriate lists. You can even check permissions using the sprLib javascript library and decide what to display from there.
+  * Because of the fact that we run this on the sharepoint server as a script, the application user's own credential will be used to access the sharepoint lists, therefore, take care to provide permissions to each user that needs access to the appropriate lists. You can even check permissions using the sprLib javascript library and decide what to display from there.
 
  One more big thank you to @gibrent for providing a super-sweet way to talk to sharepoint. 
