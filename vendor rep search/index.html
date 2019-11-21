@@ -830,7 +830,14 @@ body{font-family: Roboto;}blockquote{border-color: #f9d5bd;}.display-1{font-fami
 				: search.queryFilter += "substringof('" + input +"', "+ element +")";
 			});
 
-			sprLib.
+			sprLib.list(ListMaster.vlist.myName)
+			      .items(ListMaster.vlist)
+			      .then(objList => {
+			      	
+			      })
+			      .catch(err => {
+			      	showMessage({status: 500, message:err});
+			      });
 
 		}
 		catch(err){
