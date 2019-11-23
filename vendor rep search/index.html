@@ -209,7 +209,7 @@ body{font-family: Roboto;}blockquote{border-color: #f9d5bd;}.display-1{font-fami
 					                            </thead>
 					                            <tbody id="vlistBody">
 					                                
-					                            <tr id="vlistRow1">
+					                            <tr id="vlistRow-1">
 					                                <td id="vlistLogo" class="view-small">
 					                                    <p class="mbr-text mbr-fonts-style align-center display-7">loading . . .</p>
 					                                </td><td id="vlistVendor" class="view-tiny">
@@ -757,8 +757,22 @@ body{font-family: Roboto;}blockquote{border-color: #f9d5bd;}.display-1{font-fami
 			queryFilter: ''
 			queryOrderBy: 'Title',
 			queryLimit: 300,
-			// Keep track of which fields in vlist we want to search when we search
+			// Keep track of which columns in vlist we want to search when we search
 			myFieldsToSearch: ['Title', 'VendorNum', 'Keywords'],
+			// Keep track of CSS for viewports
+			myFieldsCss: [
+				{id:'vlistLogo', 	class:'view-small'},
+				{id:'vlistVendor', 	class:'view-tiny'},
+				{id:'vlistVenNum', 	class:'view-medium'},
+				{id:'vlistPO', 		class:''},
+				{id:'vlistPhone', 	class:'view-tiny'},
+				{id:'vlistFax', 	class:''},
+				{id:'vlistManRep', 	class:'view-tiny'},
+				{id:'vlistWeb', 	class:''},
+				{id:'vlistParts', 	class:'view-medium'},
+				{id:'vlistKeys', 	class:'view-medium'},
+				{id:'vlistEdit', 	class:'view-show-all'},
+			],
 			myName: 'Vendor List'
 		},
 		vclist: {
@@ -784,7 +798,11 @@ body{font-family: Roboto;}blockquote{border-color: #f9d5bd;}.display-1{font-fami
 			queryOrderBy: 'Title',
 			queryLimit: 300,
 			// Keep track of which fields in vlist we want to search when we search
-			myFieldsToSearch: ['Title', 'Last_x0020_Name', 'Vendor_x0020_Name_x0020_NEWId', 'Keywords']
+			myFieldsToSearch: ['Title', 'Last_x0020_Name', 'Vendor_x0020_Name_x0020_NEWId', 'Keywords'],
+			myFieldsCss: [
+
+			],
+			myName: 'Vendor Contact List'
 		},
 
 	};
@@ -833,11 +851,28 @@ body{font-family: Roboto;}blockquote{border-color: #f9d5bd;}.display-1{font-fami
 			sprLib.list(ListMaster.vlist.myName)
 			      .items(ListMaster.vlist)
 			      .then(objList => {
-			      	
+			      	var $table = $('#vlistBody>');
+			      	var $append = '';
+
+			      	objList.forEach((element, index) =>{
+			      		if(index == 6) {
+			      		// We need to process an additional td for the manrep #
+			      		}
+			      		else {
+			      			$append += '<tr id="vlistRow' + index + '">';
+
+				      		$append += '<td id="' + ListMaster.vlist.myFieldsCss[index].id + index 
+				      				+ '" class="' + ListMaster.vlist.myFieldsCss[index].css + '">' 
+				      				+ '<p class="mbr-text mbr-fonts-style align-center display-7">'
+				      				+ element + '</p>' + '</td>'
+
+				      		$append += '</tr>'
+				      		$table.append($append);
+				      	}	
+			      	});
+			      	hideLoadRow('vlistRow-1');
 			      })
-			      .catch(err => {
-			      	showMessage({status: 500, message:err});
-			      });
+			      .catch(err => throw 'Error occured: ' + err );
 
 		}
 		catch(err){
@@ -865,6 +900,10 @@ body{font-family: Roboto;}blockquote{border-color: #f9d5bd;}.display-1{font-fami
 		obj.status === 200
 		? showSuccess(obj)
 		: showFailure(obj);
+	}
+
+	function hideLoadRow(rowId) {
+		$('#'+rowid).hide();
 	}
 
 	function doPageLoad() {
