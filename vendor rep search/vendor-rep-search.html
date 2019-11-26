@@ -278,7 +278,7 @@
 		.tablesorter > tbody > tr > td.icon:last-child { border-bottom: 1px solid #F1F1F1; }
 		td img {
 			max-width: 256px;
-			max-height: 256px;
+			max-height: 128px;
 		}
 	</style>
 
@@ -1367,14 +1367,22 @@
 						      			append += '<img style="" src=""></td>';
 					      			break;	
 					      		case 6: 
-					      		    append += '<p class="mbr-text mbr-fonts-style align-center display-7">'
-				      					+ '<a href="' + ListMaster.mrlist.relativeItem + element[el].Id + '" target="_blank" >'
-				      					+ element[el].ManufacturerRep + '</a>'
+					      			if (element[el].id){
+						      		    append += '<p class="mbr-text mbr-fonts-style align-center display-7">'
+					      					+ '<a href="' + ListMaster.mrlist.relativeItem + element[el].Id + '" target="_blank" >'
+					      					+ element[el].ManufacturerRep + '</a>'
+					      			}
+					      			else
+					      				append += '<p class="mbr-text mbr-fonts-style align-center display-7"></p>'
 					      			break;
 					      		case 7:
-					      			append += '<p class="mbr-text mbr-fonts-style align-center display-7">'
-				      					+ '<a href="' + (element[el] || "") + '" target="_blank" >'
-				      					+ element[el] + '</a>'
+					      			if (element[el]) {
+					      				append += '<p class="mbr-text mbr-fonts-style align-center display-7">'
+					      					+ '<a href="' + (element[el] || "") + '" target="_blank" >'
+					      					+ (element[el] || "") + '</a>'
+					      			}
+					      			else
+					      				append +='<p class="mbr-text mbr-fonts-style align-center display-7"></p>'
 					      			break;
 					      		case 10:
 				      				append += '<div class="mbr-col mbr-section-btn align-center field">' 
