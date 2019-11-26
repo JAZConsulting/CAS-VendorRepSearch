@@ -294,7 +294,7 @@
 		var LAYOUTS_URL = ( typeof _spPageContextInfo !== 'undefined' && _spPageContextInfo.layoutsUrl ? _spPageContextInfo.layoutsUrl : '_layouts/15' );
 		// used in some pre calculations
 		var mrlistReferenceMaster = [];
-		var vListReferenceMaster = [];
+		var vlistReferenceMaster = [];
 
 		// ==================================================================================================================
 
@@ -1172,7 +1172,7 @@
 					listCols: ['Id', 'Title', 'VendorNum'],
 				})
 				.then(objList => {
-					vListReferenceMaster = objList.slice();
+					vlistReferenceMaster = objList.slice();
 				});
 			}
 
@@ -1250,20 +1250,21 @@
 		},
 		vclist: {
 			listCols :  {
+				aa:{ dataName: 'Vendor_x0020_Name_x0020_NEWId' },
 				a: { dataName: 'Id' },
 				b: { dataName: 'Title'},
 				c: { dataName: 'Last_x0020_Name' },
 				d: { dataName: 'Job_x0020_Title' },
 				e: { dataName: 'Email_x0020_Address' },
-				d: { dataName: 'Business_x0020_Phone' },
-				e: { dataName: 'Mobile_x0020_Number' },
-				f: { dataName: 'Company' },
-				g: { dataFunc: findVendor },
-				h: { dataName: 'Keywords' },
-				i: { dataFunc:  objItem => ListMaster.vclist.relateiveItem+objItem.ID }
+				f: { dataName: 'Business_x0020_Phone' },
+				g: { dataName: 'Mobile_x0020_Number' },
+				h: { dataName: 'Company' },
+				i: { dataFunc: findVendor },
+				j: { dataName: 'Keywords' },
+				k: { dataFunc:  objItem => ListMaster.vclist.relativeItem+objItem.ID }
 			},
 			queryFilter: '',
-			queryOrderBy: 'Title',
+			queryOrderBy: 'Last_x0020_Name',
 			queryLimit: 500,
 			// Keep track of which fields in vlist we want to search when we search
 			myFieldsToSearch: ['Title', 'Last_x0020_Name', 'Company', 'Keywords'],
@@ -1279,8 +1280,8 @@
 				{ id: 'vclistKeys', class: '' },
 				{ id: 'vclistEdit', class: 'view-show-all' },
 			],
-			myName: 'Vendor Contact List'
-			relativeList: '/sites/Sales/Lists/Vendor%20Contact%20List/Default%20View.aspx'
+			myName: 'Vendor Contact List',
+			relativeList: '/sites/Sales/Lists/Vendor%20Contact%20List/Default%20View.aspx',
 			relativeItem: '/sites/Sales/Lists/Vendor%20Contact%20List/DispForm.aspx?ID='
 		},
 		mrlist: {
@@ -1312,6 +1313,7 @@
 		}
 
 		return vlistReferenceMaster[k] || "Not Found"
+	}
 
 	async function vlistSearch() {
 		$('#vlistBody tr').remove();
@@ -1337,51 +1339,56 @@
 		      	$('#vlistBody tr').remove();
 		      	var table = $('#vlistBody');
 		      	
-		      	objList.forEach((element, index) => {
-		      		var append = '<tr id="vlistRow' + index + '">';
-		      		var keys = Object.keys(element);
-		      		var f = keys.indexOf('__next');
-		      		if(f >= 0 && f < keys.length) { keys.splice(f,1); }
-		      		keys.slice(2).sort().forEach((el, idx, arr) => {
-			      		append += '<td id="' + ListMaster.vlist.myFieldsCss[idx].id + index 
-				      			+ '" class="' + ListMaster.vlist.myFieldsCss[idx].class + '">'
+		      	if (objList.length > 0) {
+			      	objList.forEach((element, index) => {
+			      		var append = '<tr id="vlistRow' + index + '">';
+			      		var keys = Object.keys(element);
+			      		var f = keys.indexOf('__next');
+			      		if(f >= 0 && f < keys.length) { keys.splice(f,1); }
+			      		keys.slice(2).sort().forEach((el, idx, arr) => {
+				      		append += '<td id="' + ListMaster.vlist.myFieldsCss[idx].id + index 
+					      			+ '" class="' + ListMaster.vlist.myFieldsCss[idx].class + '">'
 
-				      	switch(idx){
-				      		case 0:
-				      			if(element[el])
-					      			append += '<img style="" src="' + (element[el].Url || "") + '"></td>';
-					      		else
-					      			append += '<img style="" src=""></td>';
-				      			break;	
-				      		case 6: 
-				      		    append += '<p class="mbr-text mbr-fonts-style align-center display-7">'
-			      					+ '<a href="' + ListMaster.mrlist.relativeItem + element[el].Id + '" target="_blank" >'
-			      					+ element[el].ManufacturerRep + '</a>'
-				      			break;
-				      		case 7:
-				      			append += '<p class="mbr-text mbr-fonts-style align-center display-7">'
-			      					+ '<a href="' + (element[el] || "") + '" target="_blank" >'
-			      					+ element[el] + '</a>'
-				      			break;
-				      		case 10:
-			      				append += '<div class="mbr-col mbr-section-btn align-center field">' 
-				      				+ '<a href="' + (element[el] || "") + '" target="_blank"  class="btn-sm btn-form btn-info-outline display-4">'
-				      				+  '<span class="mbri-share mbr-iconfont mbr-iconfont-btn"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32" fill="currentColor"><path d="M23.333 1.333c-0.368 0-0.667 0.313-0.667 0.667v4.667c-1.924 0.138-3.319 0.538-5.305 2.362s-2.699 5.131-2.695 7.638c0.001 0.775 1.106 0.92 1.31 0.172 0.648-2.42 2.423-3.591 4.122-4.214 1.35-0.494 2.112-0.475 2.568-0.497v4.539c-0.001 0.58 0.689 0.884 1.117 0.492l8-7.333c0.289-0.264 0.289-0.72 0-0.984l-8-7.333c-0.133-0.122-0.27-0.185-0.451-0.174zM24 3.516l6.346 5.818-6.346 5.818v-3.818c-0-0.368-0.299-0.667-0.667-0.667 0 0-1.75-0.003-3.693 0.708-1.077 0.394-2.176 1.118-3.133 2.102 0.402-1.454 0.768-2.477 1.797-3.505s3.177-1.971 5.029-1.971c0.368-0 0.667-0.298 0.667-0.667zM2 8c-1.096 0-2 0.904-2 2v18.667c0 	1.096 0.904 2 2 2h26.667c1.096 0 2-0.904 2-2v-12c0.013-0.902-1.346-0.902-1.333 0v12c0 0.381-0.286 0.667-0.667 0.667h-26.667c-0.381 0-0.667-0.286-0.667-0.667v-18.667c0-0.381 0.286-0.667 0.667-0.667h12c0.912 0 0.85-1.333 0-1.333z"></path></svg></span></a></div>' + '</td>';
-				      			break;
-				      		default:
-				      			append += '<p class="mbr-text mbr-fonts-style align-center display-7">'
-				      				+ (element[el] || "") + '</p>' + '</td>';
-				      	}
-				     });
-					append += '</tr>';
-			      	table.append(append);	
-		      	});
+					      	switch(idx){
+					      		case 0:
+					      			if(element[el])
+						      			append += '<img style="" src="' + (element[el].Url || "") + '"></td>';
+						      		else
+						      			append += '<img style="" src=""></td>';
+					      			break;	
+					      		case 6: 
+					      		    append += '<p class="mbr-text mbr-fonts-style align-center display-7">'
+				      					+ '<a href="' + ListMaster.mrlist.relativeItem + element[el].Id + '" target="_blank" >'
+				      					+ element[el].ManufacturerRep + '</a>'
+					      			break;
+					      		case 7:
+					      			append += '<p class="mbr-text mbr-fonts-style align-center display-7">'
+				      					+ '<a href="' + (element[el] || "") + '" target="_blank" >'
+				      					+ element[el] + '</a>'
+					      			break;
+					      		case 10:
+				      				append += '<div class="mbr-col mbr-section-btn align-center field">' 
+					      				+ '<a href="' + (element[el] || "") + '" target="_blank"  class="btn-sm btn-form btn-info-outline display-4">'
+					      				+  '<span class="mbri-share mbr-iconfont mbr-iconfont-btn"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32" fill="currentColor"><path d="M23.333 1.333c-0.368 0-0.667 0.313-0.667 0.667v4.667c-1.924 0.138-3.319 0.538-5.305 2.362s-2.699 5.131-2.695 7.638c0.001 0.775 1.106 0.92 1.31 0.172 0.648-2.42 2.423-3.591 4.122-4.214 1.35-0.494 2.112-0.475 2.568-0.497v4.539c-0.001 0.58 0.689 0.884 1.117 0.492l8-7.333c0.289-0.264 0.289-0.72 0-0.984l-8-7.333c-0.133-0.122-0.27-0.185-0.451-0.174zM24 3.516l6.346 5.818-6.346 5.818v-3.818c-0-0.368-0.299-0.667-0.667-0.667 0 0-1.75-0.003-3.693 0.708-1.077 0.394-2.176 1.118-3.133 2.102 0.402-1.454 0.768-2.477 1.797-3.505s3.177-1.971 5.029-1.971c0.368-0 0.667-0.298 0.667-0.667zM2 8c-1.096 0-2 0.904-2 2v18.667c0 	1.096 0.904 2 2 2h26.667c1.096 0 2-0.904 2-2v-12c0.013-0.902-1.346-0.902-1.333 0v12c0 0.381-0.286 0.667-0.667 0.667h-26.667c-0.381 0-0.667-0.286-0.667-0.667v-18.667c0-0.381 0.286-0.667 0.667-0.667h12c0.912 0 0.85-1.333 0-1.333z"></path></svg></span></a></div>' + '</td>';
+					      			break;
+					      		default:
+					      			append += '<p class="mbr-text mbr-fonts-style align-center display-7">'
+					      				+ (element[el] || "") + '</p>' + '</td>';
+					      	}
+					     });
+						append += '</tr>';
+				      	table.append(append);	
+			      	});
+		      }
+		      else {
+				table.append('<tr><td colspan="12"> (No Results Found) </td></tr>');
+		      }
 		      })
 		      .catch(err => {$('#vlistBody tr').remove();$('#vlistBody').append('<tr><td colspan="12">An Error occurred: '+err+'</td></tr>')} );
 		})
 	}
 
-	function vclistSearch {
+	async function vclistSearch() {
 		$('#vclistBody tr').remove();
 		$('#vclistBody').append( SPINNER );
 		$('#vclistTitle').next('div').show('slow'); $(this).find('.arrow').toggleClass('active');
@@ -1397,47 +1404,59 @@
 					? search.queryFilter += "substringof('" + input +"',"+ element +") or "
 					: search.queryFilter += "substringof('" + input +"',"+ element +")";
 				});
+				// handle 2ndary search for Vendor Names by ID
+				var k = vlistReferenceMaster.length;
+				while (--k){
+					if (vlistReferenceMaster[k].)
+				}
 			}
-		// Query Vendor List
-			sprLib.list(ListMaster.vlist.myName)
-		      .items(ListMaster.vlist)
+		// Query List
+			sprLib.list(ListMaster.vclist.myName)
+		      .items(ListMaster.vclist)
 		      .then(objList => {
 		      	$('#vclistBody tr').remove();
 		      	var table = $('#vclistBody');
-		      	
-		      	objList.forEach((element, index) => {
-		      		var append = '<tr id="vclistRow' + index + '">';
-		      		var keys = Object.keys(element);
-		      		var f = keys.indexOf('__next');
-		      		if(f >= 0 && f < keys.length) { keys.splice(f,1); }
-		      		keys.slice(2).sort().forEach((el, idx, arr) => {
-			      		append += '<td id="' + ListMaster.vlist.myFieldsCss[idx].id + index 
-				      			+ '" class="' + ListMaster.vlist.myFieldsCss[idx].class + '">'
 
-				      	switch(idx){
-				      		case 7: 
-				      		    append += '<p class="mbr-text mbr-fonts-style align-center display-7">'
-			      						+ '<a href="' + ListMaster.mrlist.relativeItem + element[el].Id + '" target="_blank" >'
-			      						+ element[el].Title + '</a>';
-			      				append += '<td id="" class="' + ListMaster.vlist.myFieldsCss[idx].class + '">'
-				      				   	+ '<p class="mbr-text mbr-fonts-style align-center display-7">'
-				      				   	+ '<a href="' + ListMaster.mrlist.relativeItem + element[el].Id + '" target="_blank" >'
-			      					   	+ element[el].VendorNum + '</a>';
-				      			break;
-				      		case 9:
-			      				append += '<div class="mbr-col mbr-section-btn align-center field">' 
-				      				+ '<a href="' + (element[el] || "") + '" target="_blank"  class="btn-sm btn-form btn-info-outline display-4">'
-				      				+  '<span class="mbri-share mbr-iconfont mbr-iconfont-btn"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32" fill="currentColor"><path d="M23.333 1.333c-0.368 0-0.667 0.313-0.667 0.667v4.667c-1.924 0.138-3.319 0.538-5.305 2.362s-2.699 5.131-2.695 7.638c0.001 0.775 1.106 0.92 1.31 0.172 0.648-2.42 2.423-3.591 4.122-4.214 1.35-0.494 2.112-0.475 2.568-0.497v4.539c-0.001 0.58 0.689 0.884 1.117 0.492l8-7.333c0.289-0.264 0.289-0.72 0-0.984l-8-7.333c-0.133-0.122-0.27-0.185-0.451-0.174zM24 3.516l6.346 5.818-6.346 5.818v-3.818c-0-0.368-0.299-0.667-0.667-0.667 0 0-1.75-0.003-3.693 0.708-1.077 0.394-2.176 1.118-3.133 2.102 0.402-1.454 0.768-2.477 1.797-3.505s3.177-1.971 5.029-1.971c0.368-0 0.667-0.298 0.667-0.667zM2 8c-1.096 0-2 0.904-2 2v18.667c0 	1.096 0.904 2 2 2h26.667c1.096 0 2-0.904 2-2v-12c0.013-0.902-1.346-0.902-1.333 0v12c0 0.381-0.286 0.667-0.667 0.667h-26.667c-0.381 0-0.667-0.286-0.667-0.667v-18.667c0-0.381 0.286-0.667 0.667-0.667h12c0.912 0 0.85-1.333 0-1.333z"></path></svg></span></a></div>' + '</td>';
-				      			break;
-				      		default:
-				      			append += '<p class="mbr-text mbr-fonts-style align-center display-7">'
-				      				+ (element[el] || "") + '</p>' + '</td>';
-				      	}
-				     });
-					append += '</tr>';
-			      	table.append(append);	
-		      	});
-		      })
+		      	if (objList.length > 0) {
+			      	objList.forEach((element, index) => {
+			      		var append = '<tr id="vclistRow' + index + '">';
+			      		var keys = Object.keys(element);
+			      		var f = keys.indexOf('__next');
+			      		if(f >= 0 && f < keys.length) { keys.splice(f,1); }
+			      		keys.slice(2).forEach((el, idx, arr) => {
+				      		append += '<td id="' + ListMaster.vclist.myFieldsCss[idx].id + index 
+					      			+ '" class="' + ListMaster.vclist.myFieldsCss[idx].class + '">'
+
+					      	switch(idx){
+					      		// HANDLE VENDOR && VENDOR NUMBER
+					      		case 7: 
+					      		    append += '<p class="mbr-text mbr-fonts-style align-center display-7">'
+				      						+ '<a href="' + ListMaster.vclist.relativeItem + element[el].Id + '" target="_blank" >'
+				      						+ (element[el].Title || "") + '</a>';
+				      				append += '<td id="" class="' + ListMaster.vlist.myFieldsCss[idx].class + '">'
+					      				   	+ '<p class="mbr-text mbr-fonts-style align-center display-7">'
+					      				   	+ '<a href="' + ListMaster.vclist.relativeItem + element[el].Id + '" target="_blank" >'
+				      					   	+ (element[el].VendorNum || "") + '</a>';
+					      			break;
+				      			// HANDLE EDIT LINK
+					      		case 9:
+				      				append += '<div class="mbr-col mbr-section-btn align-center field">' 
+					      				+ '<a href="' + (element[el] || "") + '" target="_blank"  class="btn-sm btn-form btn-info-outline display-4">'
+					      				+  '<span class="mbri-share mbr-iconfont mbr-iconfont-btn"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32" fill="currentColor"><path d="M23.333 1.333c-0.368 0-0.667 0.313-0.667 0.667v4.667c-1.924 0.138-3.319 0.538-5.305 2.362s-2.699 5.131-2.695 7.638c0.001 0.775 1.106 0.92 1.31 0.172 0.648-2.42 2.423-3.591 4.122-4.214 1.35-0.494 2.112-0.475 2.568-0.497v4.539c-0.001 0.58 0.689 0.884 1.117 0.492l8-7.333c0.289-0.264 0.289-0.72 0-0.984l-8-7.333c-0.133-0.122-0.27-0.185-0.451-0.174zM24 3.516l6.346 5.818-6.346 5.818v-3.818c-0-0.368-0.299-0.667-0.667-0.667 0 0-1.75-0.003-3.693 0.708-1.077 0.394-2.176 1.118-3.133 2.102 0.402-1.454 0.768-2.477 1.797-3.505s3.177-1.971 5.029-1.971c0.368-0 0.667-0.298 0.667-0.667zM2 8c-1.096 0-2 0.904-2 2v18.667c0 	1.096 0.904 2 2 2h26.667c1.096 0 2-0.904 2-2v-12c0.013-0.902-1.346-0.902-1.333 0v12c0 0.381-0.286 0.667-0.667 0.667h-26.667c-0.381 0-0.667-0.286-0.667-0.667v-18.667c0-0.381 0.286-0.667 0.667-0.667h12c0.912 0 0.85-1.333 0-1.333z"></path></svg></span></a></div>' + '</td>';
+					      			break;
+					      		default:
+					      			append += '<p class="mbr-text mbr-fonts-style align-center display-7">'
+					      				+ (element[el] || "") + '</p>' + '</td>';
+					      	}
+					     });
+						append += '</tr>';
+				      	table.append(append);	
+			      	});
+			    }
+			    else {
+				    table.append('<tr><td colspan="11"> (No Results Found) </td></tr>');
+			    }
+			  })
 		      .catch(err => {$('#vclistBody tr').remove();$('#vclistBody').append('<tr><td colspan="12">An Error occurred: '+err+'</td></tr>')} );
 		})
 	}
