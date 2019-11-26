@@ -1162,17 +1162,21 @@
 				sprLib.list('Manufacturer Reps')
 				.items({
 					listCols: ['Id', 'ManufacturerRep'],
+					queryLimit: 500,
 				})
 				.then(objList => {
 					mrlistReferenceMaster = objList.slice();
+					console.log("mrlistReferenceMaster is ready");
 				});
 
 				sprLib.list('Vendor List')
 				.items({
 					listCols: ['Id', 'Title', 'VendorNum'],
+					queryLimit: 800,
 				})
 				.then(objList => {
 					vlistReferenceMaster = objList.slice();
+					console.log("vlistReferenceMaster is ready");
 				});
 			}
 
@@ -1227,7 +1231,7 @@
 			},
 			queryFilter: '',
 			queryOrderBy: 'Title',
-			queryLimit: 500,
+			queryLimit: 800,
 			// Keep track of which columns in vlist we want to search when we search
 			myFieldsToSearch: ['Title', 'VendorNum', 'Keywords'],
 			// Keep track of CSS for viewports
@@ -1285,8 +1289,8 @@
 			relativeItem: '/sites/Sales/Lists/Vendor%20Contact%20List/DispForm.aspx?ID='
 		},
 		mrlist: {
-			relativeList: 		"/sites/Sales/Lists/Manufacturer%20Reps/Default.aspx",
-			relativeItem: 		"/sites/Sales/Lists/Manufacturer%20Reps/DispForm.aspx?ID="
+			relativeList: "/sites/Sales/Lists/Manufacturer%20Reps/Default.aspx",
+			relativeItem: "/sites/Sales/Lists/Manufacturer%20Reps/DispForm.aspx?ID="
 		}
 
 	};
@@ -1294,7 +1298,7 @@
 	function findManufactureRep(objItem) {
 		var k = mrlistReferenceMaster.length;
 
-		while (--k){
+		while (--k >= 0){
 			if (mrlistReferenceMaster[k].Id == objItem.ManufacturerRep0Id) {
 				break;
 			}
@@ -1306,7 +1310,7 @@
 	function findVendor(objItem) {
 		var k = vlistReferenceMaster.length;
 
-		while (--k){
+		while (--k >= 0){
 			if (vlistReferenceMaster[k].Id == objItem.Vendor_x0020_Name_x0020_NEWId) {
 				break;
 			}
@@ -1331,6 +1335,12 @@
 					? search.queryFilter += "substringof('" + input +"',"+ element +") or "
 					: search.queryFilter += "substringof('" + input +"',"+ element +")";
 				});
+				// handle 2ndary search for Manufacturer Reps Names by ID
+				var k = mrlistReferenceMaster.length;
+				while (--k >= 0){
+					if (mrlistReferenceMaster[k].ManufacturerRep.toUpperCase().includes(input.toUpperCase()))
+						search.queryFilter += " or ManufacturerRep0Id eq " + mrlistReferenceMaster[k].Id
+				}
 			}
 		// Query Vendor List
 			sprLib.list(ListMaster.vlist.myName)
@@ -1406,8 +1416,11 @@
 				});
 				// handle 2ndary search for Vendor Names by ID
 				var k = vlistReferenceMaster.length;
-				while (--k){
-					if (vlistReferenceMaster[k].)
+				while (--k >= 0){
+					if (vlistReferenceMaster[k].Title.toUpperCase().includes(input.toUpperCase()) || vlistReferenceMaster[k].VendorNum == input )
+						search.queryFilter += " or Vendor_x0020_Name_x0020_NEWId eq " + vlistReferenceMaster[k].Id
+					if (vlistReferenceMaster[k].VendorNum == input)
+						console.log("This worked")
 				}
 			}
 		// Query List
