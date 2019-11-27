@@ -295,6 +295,8 @@
 		// used in some pre calculations
 		var mrlistReferenceMaster = [];
 		var vlistReferenceMaster = [];
+		let VENDOR_LIMIT = 800;
+		let MANREP_LIMIT = 500;
 
 		// ==================================================================================================================
 
@@ -1162,7 +1164,7 @@
 				sprLib.list('Manufacturer Reps')
 				.items({
 					listCols: ['Id', 'ManufacturerRep'],
-					queryLimit: 500,
+					queryLimit: MANREP_LIMIT,
 				})
 				.then(objList => {
 					mrlistReferenceMaster = objList.slice();
@@ -1172,7 +1174,7 @@
 				sprLib.list('Vendor List')
 				.items({
 					listCols: ['Id', 'Title', 'VendorNum'],
-					queryLimit: 800,
+					queryLimit: VENDOR_LIMIT,
 				})
 				.then(objList => {
 					vlistReferenceMaster = objList.slice();
@@ -1211,6 +1213,8 @@
 // Thank you @gitbrent on Github.com -- Don't reinvent the wheel!
 
 	let SPINNER = '<tr><td><div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div></td></tr>';
+	let VENDOR_LIMIT = 800;
+	let MANREP_LIMIT = 500;
 
 	let ListMaster = {
 		vlist: {
@@ -1231,7 +1235,7 @@
 			},
 			queryFilter: '',
 			queryOrderBy: 'Title',
-			queryLimit: 800,
+			queryLimit: VENDOR_LIMIT,
 			// Keep track of which columns in vlist we want to search when we search
 			myFieldsToSearch: ['Title', 'VendorNum', 'Keywords'],
 			// Keep track of CSS for viewports
@@ -1269,7 +1273,7 @@
 			},
 			queryFilter: '',
 			queryOrderBy: 'Last_x0020_Name',
-			queryLimit: 500,
+			queryLimit: MANREP_LIMIT,
 			// Keep track of which fields in vlist we want to search when we search
 			myFieldsToSearch: ['Title', 'Last_x0020_Name', 'Company', 'Keywords'],
 			myFieldsCss: [
@@ -1295,18 +1299,14 @@
 				b: 	{ dataName: 'Logo'},
 				c: 	{ dataName: 'ManufacturerRep' },
 				d: 	{ dataName: 'Manufacturer_x0020_Rep_x0020__x0' },
-				e: 	{ dataName: 'Placing_x0020_POs' },
-				f: 	{ dataName: 'Phone' },
-				g: 	{ dataName: 'Fax' },
-				h: 	{ dataFunc: findManufactureRep },
-				i: 	{ dataName: 'Website' },
-				j: 	{ dataName: 'Parts_x0020_Sold' },
+				e: 	{ dataFunc: findManyVendors },
+				f: 	{ dataName: 'Email' },
 				k: 	{ dataName: 'Keywords' },
-				l: 	{ dataFunc:  objItem => ListMaster.vlist.relativeItem+objItem.ID }
+				l: 	{ dataFunc:  objItem => ListMaster.mrlist.relativeItem+objItem.ID }
 			},
 			queryFilter: '',
-			queryOrderBy: 'Title',
-			queryLimit: 800,
+			queryOrderBy: 'ManufacturerRep',
+			queryLimit: MANREP_LIMIT,
 			// Keep track of which columns in vlist we want to search when we search
 			myFieldsToSearch: ['Title', 'VendorNum', 'Keywords'],
 			// Keep track of CSS for viewports
