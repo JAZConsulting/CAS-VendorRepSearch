@@ -1289,6 +1289,41 @@
 			relativeItem: '/sites/Sales/Lists/Vendor%20Contact%20List/DispForm.aspx?ID='
 		},
 		mrlist: {
+			listCols :  {
+				aa: { dataName: 'Vendor_x0020_Name0Id' },
+				a: 	{ dataName: 'Id'},
+				b: 	{ dataName: 'Logo'},
+				c: 	{ dataName: 'ManufacturerRep' },
+				d: 	{ dataName: 'Manufacturer_x0020_Rep_x0020__x0' },
+				e: 	{ dataName: 'Placing_x0020_POs' },
+				f: 	{ dataName: 'Phone' },
+				g: 	{ dataName: 'Fax' },
+				h: 	{ dataFunc: findManufactureRep },
+				i: 	{ dataName: 'Website' },
+				j: 	{ dataName: 'Parts_x0020_Sold' },
+				k: 	{ dataName: 'Keywords' },
+				l: 	{ dataFunc:  objItem => ListMaster.vlist.relativeItem+objItem.ID }
+			},
+			queryFilter: '',
+			queryOrderBy: 'Title',
+			queryLimit: 800,
+			// Keep track of which columns in vlist we want to search when we search
+			myFieldsToSearch: ['Title', 'VendorNum', 'Keywords'],
+			// Keep track of CSS for viewports
+			myFieldsCss: [
+				{id:'vlistLogo', 	class:'view-small iconSvg'},
+				{id:'vlistVendor', 	class:'view-tiny'},
+				{id:'vlistVenNum', 	class:'view-medium'},
+				{id:'vlistPO', 		class:''},
+				{id:'vlistPhone', 	class:'view-tiny'},
+				{id:'vlistFax', 	class:''},
+				{id:'vlistManRep', 	class:'view-tiny'},
+				{id:'vlistWeb', 	class:''},
+				{id:'vlistParts', 	class:'view-medium'},
+				{id:'vlistKeys', 	class:'view-medium'},
+				{id:'vlistEdit', 	class:'view-show-all'},
+			],
+			myName: 'Manufacturer Reps',
 			relativeList: "/sites/Sales/Lists/Manufacturer%20Reps/Default.aspx",
 			relativeItem: "/sites/Sales/Lists/Manufacturer%20Reps/DispForm.aspx?ID="
 		}
@@ -1304,19 +1339,40 @@
 			}
 		}
 
-		return mrlistReferenceMaster[k] || "Not Found"
+		return mrlistReferenceMaster[k] || "Not Found";
 	}
 
-	function findVendor(objItem) {
+	function findVendor(objItem, opts) {
 		var k = vlistReferenceMaster.length;
 
-		while (--k >= 0){
-			if (vlistReferenceMaster[k].Id == objItem.Vendor_x0020_Name_x0020_NEWId) {
-				break;
+		if (opts !== undefined ){ // overloaded for using findManyVendors
+			while (--k >= 0){
+				if (vlistReferenceMaster[k].Id == objItem["many"]) {
+					break;
+				}
+			}
+		}
+		else {
+			while (--k >= 0){
+				if (vlistReferenceMaster[k].Id == objItem.Vendor_x0020_Name_x0020_NEWId) {
+					break;
+				}
 			}
 		}
 
-		return vlistReferenceMaster[k] || "Not Found"
+		return vlistReferenceMaster[k] || "Not Found";
+	}
+
+	function findManyVendors(objItem) {
+		var temp = [];
+		if (objItem.Vendor_x0020_Name0Id.results.length > 0){
+			var j = objItem.Vendor_x0020_Name0Id.results.length;
+			while (--J >= 0){
+				temp.push(findVendor({}, {many: objItem.Vendor_x0020_Name0Id.results[j]}))
+			}
+		}
+
+		return temp || "Not Found";
 	}
 
 	async function vlistSearch() {
