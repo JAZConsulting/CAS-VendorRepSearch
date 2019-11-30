@@ -280,6 +280,10 @@
 			max-width: 256px;
 			max-height: 128px;
 		}
+		td p {
+			overflow-wrap: break-word;
+			max-width: 250px;
+		}
 	</style>
 
 	<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -1159,7 +1163,7 @@
 				);
 			}
 
-			// Pre-Load Manufacturer Rep && Vendor Reference
+			// Pre-Load Manufacturer Rep && Vendor Reference && user ids
 			{
 				sprLib.list('Manufacturer Reps')
 				.items({
@@ -1180,6 +1184,7 @@
 					vlistReferenceMaster = objList.slice();
 					console.log("vlistReferenceMaster is ready");
 				});
+
 			}
 
 			// LAST: Highlight all generated code
@@ -1188,15 +1193,11 @@
 
 		// ==================================================================================================================
 		$(document).ready(function(){
-			// If you're me: Load newest/local copy for dev/test work :-)
-			if ( window.location.href.toLowerCase().indexOf('gitbrent') > -1 && window.location.href.toLowerCase().indexOf('debug') > -1 ) {
-				// Dynamically load library as SharePoint Online is *BAD* about caching
-				$.getScript("/sites/dev/SiteAssets/sprestlib/js/sprestlib.js", function(){
-					$('#libChkSprLib').val( sprLib.version ).addClass('bg-success text-white');
-					console.log('FYI: Local copy of `sprestlib.js` loaded successfully...');
-					console.log( sprLib.version );
-					doPageLoad();
-				});
+			// If you're me Do Special Stuff!
+			if ( sprLib.user().info().then( objList => objList.Email == "johnz@centralazsupply.com")) {
+				// Do special stuff
+
+				doPageLoad();
 			}
 			else if ( typeof sprLib === 'undefined' ) {
 				alert("Oops!\n\n`sprLib` is undefined - maybe a bad link to the 'sprestlib.js' file or something...?\n");
@@ -1208,13 +1209,11 @@
 		});
 	</script>
 	<script>
-// Author: Johnathan Zamora
-// Date: 11/15/2019
-// Thank you @gitbrent on Github.com -- Don't reinvent the wheel!
+	// Author: Johnathan Zamora
+	// Date: 11/15/2019
+	// Thank you @gitbrent on Github.com -- Don't reinvent the wheel!
 
 	let SPINNER = '<tr><td><div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div></td></tr>';
-	let VENDOR_LIMIT = 800;
-	let MANREP_LIMIT = 500;
 
 	let ListMaster = {
 		vlist: {
@@ -1299,80 +1298,132 @@
 				b: 	{ dataName: 'Logo'},
 				c: 	{ dataName: 'ManufacturerRep' },
 				d: 	{ dataName: 'Manufacturer_x0020_Rep_x0020__x0' },
-				e: 	{ dataFunc: findManyVendors },
-				f: 	{ dataName: 'Email' },
+				e: 	{ dataName: 'Email' },
+				f: 	{ dataFunc: findManyVendors },
 				k: 	{ dataName: 'Keywords' },
-				l: 	{ dataFunc:  objItem => ListMaster.mrlist.relativeItem+objItem.ID }
+				l: 	{ dataFunc: objItem => ListMaster.mrlist.relativeItem+objItem.ID }
 			},
 			queryFilter: '',
 			queryOrderBy: 'ManufacturerRep',
 			queryLimit: MANREP_LIMIT,
 			// Keep track of which columns in vlist we want to search when we search
-			myFieldsToSearch: ['Title', 'VendorNum', 'Keywords'],
+			myFieldsToSearch: ['ManufacturerRep', 'Keywords'],
 			// Keep track of CSS for viewports
 			myFieldsCss: [
-				{id:'vlistLogo', 	class:'view-small iconSvg'},
-				{id:'vlistVendor', 	class:'view-tiny'},
-				{id:'vlistVenNum', 	class:'view-medium'},
-				{id:'vlistPO', 		class:''},
-				{id:'vlistPhone', 	class:'view-tiny'},
-				{id:'vlistFax', 	class:''},
-				{id:'vlistManRep', 	class:'view-tiny'},
-				{id:'vlistWeb', 	class:''},
-				{id:'vlistParts', 	class:'view-medium'},
-				{id:'vlistKeys', 	class:'view-medium'},
-				{id:'vlistEdit', 	class:'view-show-all'},
+				{id:'mrlistLogo', 	class:'view-small iconSvg'},
+				{id:'mrlistManRep',	class:'view-tiny'},
+				{id:'mrlistRepNum', class:'view-tiny'},
+				{id:'mrlistEmail', 	class:'view-medium'},
+				{id:'mrlistVendor', class:'view-small'},
+				{id:'mrlistKeys', 	class:'view-medium'},
+				{id:'mrlistEdit', 	class:'view-show-all'},
 			],
 			myName: 'Manufacturer Reps',
 			relativeList: "/sites/Sales/Lists/Manufacturer%20Reps/Default.aspx",
 			relativeItem: "/sites/Sales/Lists/Manufacturer%20Reps/DispForm.aspx?ID="
-		}
+		},
+		mrclist: {
+			listCols :  {
+				aaa:{dataName: 'ManufacturerRepId' },
+				aa:{ dataName: 'Vendor_x0020_Name0Id' },
+				a: { dataName: 'Id' },
+				b: { dataName: 'Title'},
+				c: { dataName: 'Last_x0020_Name' },
+				d: { dataName: 'Job_x0020_Title' },
+				e: { dataName: 'Email_x0020_Address' },
+				f: { dataName: 'Business_x0020_Phone' },
+				g: { dataName: 'Mobile_x0020_Number' },
+				h: { dataFunc: findManufactureRepC },
+				i: { dataFunc: findManyVendors },
+				k: { dataFunc:  objItem => ListMaster.mrclist.relativeItem+objItem.ID }
+			},
+			queryFilter: '',
+			queryOrderBy: 'Last_x0020_Name',
+			queryLimit: MANREP_LIMIT,
+			// Keep track of which fields in vlist we want to search when we search
+			myFieldsToSearch: ['Title', 'Last_x0020_Name'],
+			myFieldsCss: [
+				{ id: 'vclistFirst', class: 'view-tiny' },
+				{ id: 'vclistLast', class: 'view-tiny' },
+				{ id: 'vclistTitle', class: '' },
+				{ id: 'vclistEmail', class: 'view-small' },
+				{ id: 'vclistPhone', class: 'view-medium' },
+				{ id: 'vclistCell', class: '' },
+				{ id: 'vclistManRep', class: 'view-tiny' },
+				{ id: 'vclistVendor', class: 'view-medium' },
+				{ id: 'vclistEdit', class: 'view-show-all' },
+			],
+			myName: 'Manufacturer Rep Contact List',
+			relativeList: '/sites/Sales/Lists/Manufacturer%20Rep%20Contact%20List/Default%20View.aspx',
+			relativeItem: '/sites/Sales/Lists/Manufacturer%20Rep%20Contact%20List/DispForm.aspx?ID='
+		},
+		vdlist: {
+			listCols :  {
+				aaa:{dataName: 'EditorId' },
+				aa:{ dataName: 'Vendor_x0020_Name0Id' },
+				a: { dataName: 'Id' },
+				b: { dataName: 'Title'},
+				c: { dataName: 'Document_x0020_Type' },
+				d: { dataFunc: findManyVendors },
+				e: { dataFunc: findEditor,
+					 dataName: 'EditorId' },
+				f: { dataName: 'Modified' },
+				i: { dataName: 'Keywords' },
+				k: { dataFunc:  objItem => ListMaster.vdlist.relativeItem+objItem.Title }
+			},
+			queryFilter: '',
+			queryOrderBy: 'Title',
+			queryLimit: MANREP_LIMIT,
+			// Keep track of which fields in vlist we want to search when we search
+			myFieldsToSearch: ['Title'],
+			myFieldsCss: [
+				{ id: 'vdlistName', class: 'view-tiny' },
+				{ id: 'vdlistType', class: 'view-medium' },
+				{ id: 'vdlistVendor', class: 'view-small' },
+				{ id: 'vdlistModified', class: 'view-medium' },
+				{ id: 'vdlistModBy', class: 'view-tiny' },
+				{ id: 'vdlistKeys', class: '' },
+				{ id: 'vdlistEdit', class: 'view-show-all' },
+			],
+			myName: 'Vendor Documents',
+			relativeList: '/sites/Sales/Vendor%20Documents/Forms/Default View.aspx',
+			relativeItem: '/sites/Sales/Vendor%20Documents/Forms/Default%20View.aspx?RootFolder=%2Fsites%2FSales%2FVendor%20Documents&view=7&q='
+		},
 
 	};
 
 	function findManufactureRep(objItem) {
-		var k = mrlistReferenceMaster.length;
-
-		while (--k >= 0){
-			if (mrlistReferenceMaster[k].Id == objItem.ManufacturerRep0Id) {
-				break;
-			}
-		}
-
-		return mrlistReferenceMaster[k] || "Not Found";
+		return mrlistReferenceMaster.find( (e) => e.Id == objItem.ManufacturerRep0Id ) || "Not Found"
+	}
+	// Stupid duplicate method because of Col Name difference
+	function findManufactureRepC(objItem) {
+		return mrlistReferenceMaster.find( (e) => e.Id == objItem.ManufacturerRepId ) || "Not Found"
 	}
 
 	function findVendor(objItem, opts) {
-		var k = vlistReferenceMaster.length;
-
-		if (opts !== undefined ){ // overloaded for using findManyVendors
-			while (--k >= 0){
-				if (vlistReferenceMaster[k].Id == objItem["many"]) {
-					break;
-				}
-			}
-		}
-		else {
-			while (--k >= 0){
-				if (vlistReferenceMaster[k].Id == objItem.Vendor_x0020_Name_x0020_NEWId) {
-					break;
-				}
-			}
-		}
-
-		return vlistReferenceMaster[k] || "Not Found";
+		if(objItem.hasOwnProperty('Vendor_x0020_Name0Id')) 
+			return vlistReferenceMaster.find( (e) => e.Id == opts.many ) || "Not Found"
+		else 
+			return vlistReferenceMaster.find( (e) => e.Id == objItem.Vendor_x0020_Name_x0020_NEWId ) || "Not Found"
 	}
 
 	function findManyVendors(objItem) {
 		var temp = [];
 		if (objItem.Vendor_x0020_Name0Id.results.length > 0){
 			var j = objItem.Vendor_x0020_Name0Id.results.length;
-			while (--J >= 0){
-				temp.push(findVendor({}, {many: objItem.Vendor_x0020_Name0Id.results[j]}))
+			while (--j >= 0){
+				temp.push(findVendor(objItem,{many: objItem.Vendor_x0020_Name0Id.results[j]}))
 			}
 		}
 
 		return temp || "Not Found";
+	}
+
+	function findEditor(objItem) {
+		var editor = "";
+		sprLib.user({ id:objItem.EditorId, baseURL:'/sites/sales' }).info()
+			.then( (objUser) => editor = objUser.Title.slice() );
+		return editor
 	}
 
 	async function vlistSearch() {
@@ -1416,31 +1467,31 @@
 					      			+ '" class="' + ListMaster.vlist.myFieldsCss[idx].class + '">'
 
 					      	switch(idx){
-					      		case 0:
+					      		case 0: //LOGO
 					      			if(element[el])
 						      			append += '<img style="" src="' + (element[el].Url || "") + '"></td>';
 						      		else
 						      			append += '<img style="" src=""></td>';
 					      			break;	
-					      		case 6: 
-					      			if (element[el].id){
+					      		case 6: //MANREP
+					      			if (element[el].Id){
 						      		    append += '<p class="mbr-text mbr-fonts-style align-center display-7">'
 					      					+ '<a href="' + ListMaster.mrlist.relativeItem + element[el].Id + '" target="_blank" >'
-					      					+ element[el].ManufacturerRep + '</a>'
+					      					+ element[el].ManufacturerRep + '</a></p></td>'
 					      			}
 					      			else
-					      				append += '<p class="mbr-text mbr-fonts-style align-center display-7"></p>'
+					      				append += '<p class="mbr-text mbr-fonts-style align-center display-7"></p></td>'
 					      			break;
-					      		case 7:
+					      		case 7://WEBSITE
 					      			if (element[el]) {
 					      				append += '<p class="mbr-text mbr-fonts-style align-center display-7">'
 					      					+ '<a href="' + (element[el] || "") + '" target="_blank" >'
-					      					+ (element[el] || "") + '</a>'
+					      					+ (element[el] || "") + '</a></p></td>'
 					      			}
 					      			else
-					      				append +='<p class="mbr-text mbr-fonts-style align-center display-7"></p>'
+					      				append +='<p class="mbr-text mbr-fonts-style align-center display-7"></p></td>'
 					      			break;
-					      		case 10:
+					      		case (arr.length-1):
 				      				append += '<div class="mbr-col mbr-section-btn align-center field">' 
 					      				+ '<a href="' + (element[el] || "") + '" target="_blank"  class="btn-sm btn-form btn-info-outline display-4">'
 					      				+  '<span class="mbri-share mbr-iconfont mbr-iconfont-btn"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32" fill="currentColor"><path d="M23.333 1.333c-0.368 0-0.667 0.313-0.667 0.667v4.667c-1.924 0.138-3.319 0.538-5.305 2.362s-2.699 5.131-2.695 7.638c0.001 0.775 1.106 0.92 1.31 0.172 0.648-2.42 2.423-3.591 4.122-4.214 1.35-0.494 2.112-0.475 2.568-0.497v4.539c-0.001 0.58 0.689 0.884 1.117 0.492l8-7.333c0.289-0.264 0.289-0.72 0-0.984l-8-7.333c-0.133-0.122-0.27-0.185-0.451-0.174zM24 3.516l6.346 5.818-6.346 5.818v-3.818c-0-0.368-0.299-0.667-0.667-0.667 0 0-1.75-0.003-3.693 0.708-1.077 0.394-2.176 1.118-3.133 2.102 0.402-1.454 0.768-2.477 1.797-3.505s3.177-1.971 5.029-1.971c0.368-0 0.667-0.298 0.667-0.667zM2 8c-1.096 0-2 0.904-2 2v18.667c0 	1.096 0.904 2 2 2h26.667c1.096 0 2-0.904 2-2v-12c0.013-0.902-1.346-0.902-1.333 0v12c0 0.381-0.286 0.667-0.667 0.667h-26.667c-0.381 0-0.667-0.286-0.667-0.667v-18.667c0-0.381 0.286-0.667 0.667-0.667h12c0.912 0 0.85-1.333 0-1.333z"></path></svg></span></a></div>' + '</td>';
@@ -1483,8 +1534,6 @@
 				while (--k >= 0){
 					if (vlistReferenceMaster[k].Title.toUpperCase().includes(input.toUpperCase()) || vlistReferenceMaster[k].VendorNum == input )
 						search.queryFilter += " or Vendor_x0020_Name_x0020_NEWId eq " + vlistReferenceMaster[k].Id
-					if (vlistReferenceMaster[k].VendorNum == input)
-						console.log("This worked")
 				}
 			}
 		// Query List
@@ -1508,15 +1557,15 @@
 					      		// HANDLE VENDOR && VENDOR NUMBER
 					      		case 7: 
 					      		    append += '<p class="mbr-text mbr-fonts-style align-center display-7">'
-				      						+ '<a href="' + ListMaster.vclist.relativeItem + element[el].Id + '" target="_blank" >'
-				      						+ (element[el].Title || "") + '</a>';
-				      				append += '<td id="" class="' + ListMaster.vlist.myFieldsCss[idx].class + '">'
+				      						+ '<a href="' + ListMaster.vlist.relativeItem + element[el].Id + '" target="_blank" >'
+				      						+ (element[el].Title || "") + '</a></p></td>';
+				      				append += '<td id="" class="' + ListMaster.vclist.myFieldsCss[idx].class + '">'
 					      				   	+ '<p class="mbr-text mbr-fonts-style align-center display-7">'
-					      				   	+ '<a href="' + ListMaster.vclist.relativeItem + element[el].Id + '" target="_blank" >'
-				      					   	+ (element[el].VendorNum || "") + '</a>';
+					      				   	+ '<a href="' + ListMaster.vlist.relativeItem + element[el].Id + '" target="_blank" >'
+				      					   	+ (element[el].VendorNum || "") + '</a></p></td>';
 					      			break;
 				      			// HANDLE EDIT LINK
-					      		case 9:
+					      		case (arr.length-1):
 				      				append += '<div class="mbr-col mbr-section-btn align-center field">' 
 					      				+ '<a href="' + (element[el] || "") + '" target="_blank"  class="btn-sm btn-form btn-info-outline display-4">'
 					      				+  '<span class="mbri-share mbr-iconfont mbr-iconfont-btn"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32" fill="currentColor"><path d="M23.333 1.333c-0.368 0-0.667 0.313-0.667 0.667v4.667c-1.924 0.138-3.319 0.538-5.305 2.362s-2.699 5.131-2.695 7.638c0.001 0.775 1.106 0.92 1.31 0.172 0.648-2.42 2.423-3.591 4.122-4.214 1.35-0.494 2.112-0.475 2.568-0.497v4.539c-0.001 0.58 0.689 0.884 1.117 0.492l8-7.333c0.289-0.264 0.289-0.72 0-0.984l-8-7.333c-0.133-0.122-0.27-0.185-0.451-0.174zM24 3.516l6.346 5.818-6.346 5.818v-3.818c-0-0.368-0.299-0.667-0.667-0.667 0 0-1.75-0.003-3.693 0.708-1.077 0.394-2.176 1.118-3.133 2.102 0.402-1.454 0.768-2.477 1.797-3.505s3.177-1.971 5.029-1.971c0.368-0 0.667-0.298 0.667-0.667zM2 8c-1.096 0-2 0.904-2 2v18.667c0 	1.096 0.904 2 2 2h26.667c1.096 0 2-0.904 2-2v-12c0.013-0.902-1.346-0.902-1.333 0v12c0 0.381-0.286 0.667-0.667 0.667h-26.667c-0.381 0-0.667-0.286-0.667-0.667v-18.667c0-0.381 0.286-0.667 0.667-0.667h12c0.912 0 0.85-1.333 0-1.333z"></path></svg></span></a></div>' + '</td>';
@@ -1538,9 +1587,297 @@
 		})
 	}
 
+	async function mrlistSearch() {
+		$('#mrlistBody tr').remove();
+		$('#mrlistBody').append( SPINNER );
+		$('#mrlistTitle').next('div').show('slow'); $(this).find('.arrow').toggleClass('active');
+		Promise.resolve().then( () => {
+			var input = $('#searchInput').val();
+			var search = ListMaster.mrlist;
+		// set up Query Filter
+			search.queryFilter = '';
+			if(input.length <= 0) {/* Don't set up a query filter */}
+			else {
+				search.myFieldsToSearch.forEach( (element, index, arr) => { 
+					index !== (arr.length - 1)
+					? search.queryFilter += "substringof('" + input +"',"+ element +") or "
+					: search.queryFilter += "substringof('" + input +"',"+ element +")";
+				});
+				// handle 2ndary search for Vendor Names by ID
+				var k = vlistReferenceMaster.length;
+				while (--k >= 0){
+					if (vlistReferenceMaster[k].Title.toUpperCase().includes(input.toUpperCase()) || vlistReferenceMaster[k].VendorNum == input )
+						search.queryFilter += " or Vendor_x0020_Name0Id eq " + vlistReferenceMaster[k].Id
+				}
+			}
+		// Query List
+			sprLib.list(ListMaster.mrlist.myName)
+		      .items(ListMaster.mrlist)
+		      .then(objList => {
+		      	$('#mrlistBody tr').remove();
+		      	var table = $('#mrlistBody');
+
+		      	if (objList.length > 0) {
+			      	objList.forEach((element, index) => {
+			      		var append = '<tr id="mrlistRow' + index + '">';
+			      		var keys = Object.keys(element);
+			      		var f = keys.indexOf('__next');
+			      		if(f >= 0 && f < keys.length) { keys.splice(f,1); }
+			      		keys.slice(2).forEach((el, idx, arr) => {
+				      		append += '<td id="' + ListMaster.mrlist.myFieldsCss[idx].id + index 
+					      			+ '" class="' + ListMaster.mrlist.myFieldsCss[idx].class + '">'
+
+					      	switch(idx){
+					      		case 0: // LOGO
+					      			if(element[el])
+						      			append += '<img style="" src="' + (element[el].Url || "") + '"></td>';
+						      		else
+						      			append += '<img style="" src=""></td>';
+					      			break; 
+					      		case 4: // HANDLE VENDOR && VENDOR NUMBER
+					      			if (element[el]){
+					      				var appendNum = '<td id="" class="' + ListMaster.mrlist.myFieldsCss[idx].class + '">'
+					      				   			  + '<p class="mbr-text mbr-fonts-style align-center display-7">';
+					      				append += '<p class="mbr-text mbr-fonts-style align-center display-7">';
+					      				element[el].forEach( (e, i ,a) => {
+					      					append += '<a href="' + ListMaster.vlist.relativeItem + e.Id + '" target="_blank" >'
+				      								+ (e.Title || "") + '</a>' + '&nbsp;&nbsp;';
+				      						appendNum += '<a href="' + ListMaster.vlist.relativeItem + e.Id + '" target="_blank" >'
+				      					   			  + (e.VendorNum || "") + '</a>' + '&nbsp;&nbsp;';
+					      				});
+					      				append += '</p></td>';
+					      				append += appendNum + '</p></td>';
+					      			}
+					      		    else {
+					      		    	append += '<p class="mbr-text mbr-fonts-style align-center display-7"></p></td>'
+					      		    	append += '<td id="" class="' + ListMaster.mrlist.myFieldsCss[idx].class + '">'
+					      		    		   	+ '<p class="mbr-text mbr-fonts-style align-center display-7"></p></td>'
+					      		    }
+					      			break;
+					      		case (arr.length-1): // HANDLE EDIT LINK
+				      				append += '<div class="mbr-col mbr-section-btn align-center field">' 
+					      				+ '<a href="' + (element[el] || "") + '" target="_blank"  class="btn-sm btn-form btn-info-outline display-4">'
+					      				+  '<span class="mbri-share mbr-iconfont mbr-iconfont-btn"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32" fill="currentColor"><path d="M23.333 1.333c-0.368 0-0.667 0.313-0.667 0.667v4.667c-1.924 0.138-3.319 0.538-5.305 2.362s-2.699 5.131-2.695 7.638c0.001 0.775 1.106 0.92 1.31 0.172 0.648-2.42 2.423-3.591 4.122-4.214 1.35-0.494 2.112-0.475 2.568-0.497v4.539c-0.001 0.58 0.689 0.884 1.117 0.492l8-7.333c0.289-0.264 0.289-0.72 0-0.984l-8-7.333c-0.133-0.122-0.27-0.185-0.451-0.174zM24 3.516l6.346 5.818-6.346 5.818v-3.818c-0-0.368-0.299-0.667-0.667-0.667 0 0-1.75-0.003-3.693 0.708-1.077 0.394-2.176 1.118-3.133 2.102 0.402-1.454 0.768-2.477 1.797-3.505s3.177-1.971 5.029-1.971c0.368-0 0.667-0.298 0.667-0.667zM2 8c-1.096 0-2 0.904-2 2v18.667c0 	1.096 0.904 2 2 2h26.667c1.096 0 2-0.904 2-2v-12c0.013-0.902-1.346-0.902-1.333 0v12c0 0.381-0.286 0.667-0.667 0.667h-26.667c-0.381 0-0.667-0.286-0.667-0.667v-18.667c0-0.381 0.286-0.667 0.667-0.667h12c0.912 0 0.85-1.333 0-1.333z"></path></svg></span></a></div>' + '</td>';
+					      			break;
+					      		default:
+					      			append += '<p class="mbr-text mbr-fonts-style align-center display-7">'
+					      				+ (element[el] || "") + '</p>' + '</td>';
+					      	}
+					     });
+						append += '</tr>';
+				      	table.append(append);	
+			      	});
+			    }
+			    else {
+				    table.append('<tr><td colspan="11"> (No Results Found) </td></tr>');
+			    }
+			  })
+		      .catch(err => {$('#mrlistBody tr').remove();$('#mrlistBody').append('<tr><td colspan="12">An Error occurred: '+err+'</td></tr>')} );
+		})
+	}
+
+	async function mrclistSearch() {
+		$('#mrclistBody tr').remove();
+		$('#mrclistBody').append( SPINNER );
+		$('#mrclistTitle').next('div').show('slow'); $(this).find('.arrow').toggleClass('active');
+		Promise.resolve().then( () => {
+			var input = $('#searchInput').val();
+			var search = ListMaster.mrclist;
+		// set up Query Filter
+			search.queryFilter = '';
+			if(input.length <= 0) {/* Don't set up a query filter */}
+			else {
+				search.myFieldsToSearch.forEach( (element, index, arr) => { 
+					index !== (arr.length - 1)
+					? search.queryFilter += "substringof('" + input +"',"+ element +") or "
+					: search.queryFilter += "substringof('" + input +"',"+ element +")";
+				});
+				// handle 2ndary search for Vendor Names by ID
+				var k = vlistReferenceMaster.length;
+				while (--k >= 0){
+					if (vlistReferenceMaster[k].Title.toUpperCase().includes(input.toUpperCase()) || vlistReferenceMaster[k].VendorNum == input )
+						search.queryFilter += " or Vendor_x0020_Name0Id eq " + vlistReferenceMaster[k].Id
+				}
+				// handle 2ndary search for Manufacturer Reps Names by ID
+				k = mrlistReferenceMaster.length;
+				while (--k >= 0){
+					if (mrlistReferenceMaster[k].ManufacturerRep.toUpperCase().includes(input.toUpperCase()))
+						search.queryFilter += " or ManufacturerRepId eq " + mrlistReferenceMaster[k].Id
+				} 
+			}
+		// Query List
+			sprLib.list(ListMaster.mrclist.myName)
+		      .items(ListMaster.mrclist)
+		      .then(objList => {
+		      	$('#mrclistBody tr').remove();
+		      	var table = $('#mrclistBody');
+
+		      	if (objList.length > 0) {
+			      	objList.forEach((element, index) => {
+			      		var append = '<tr id="mrclistRow' + index + '">';
+			      		var keys = Object.keys(element);
+			      		var f = keys.indexOf('__next');
+			      		if(f >= 0 && f < keys.length) { keys.splice(f,1); }
+			      		keys.slice(3).forEach((el, idx, arr) => {
+				      		append += '<td id="' + ListMaster.mrclist.myFieldsCss[idx].id + index 
+					      			+ '" class="' + ListMaster.mrclist.myFieldsCss[idx].class + '">'
+
+					      	switch(idx){
+					      		case 6: // HANDLE MANREP
+					      			if (element[el].Id){
+						      		    append += '<p class="mbr-text mbr-fonts-style align-center display-7">'
+					      					+ '<a href="' + ListMaster.mrlist.relativeItem + element[el].Id + '" target="_blank" >'
+					      					+ element[el].ManufacturerRep + '</a></p></td>';
+					      			}
+					      			else
+					      				append += '<p class="mbr-text mbr-fonts-style align-center display-7"></p></td>'
+					      			break;
+					      		// HANDLE VENDOR && VENDOR NUMBER
+					      		case 7: 
+					      			if (element[el]){
+					      				var appendNum = '<td id="" class="' + ListMaster.mrclist.myFieldsCss[idx].class + '">'
+					      				   			  + '<p class="mbr-text mbr-fonts-style align-center display-7">';
+					      				append += '<p class="mbr-text mbr-fonts-style align-center display-7">';
+					      				element[el].forEach( (e, i ,a) => {
+					      					append += '<a href="' + ListMaster.vlist.relativeItem + e.Id + '" target="_blank" >'
+				      								+ (e.Title || "") + '</a>' + '&nbsp;&nbsp;';
+				      						appendNum += '<a href="' + ListMaster.vlist.relativeItem + e.Id + '" target="_blank" >'
+				      					   			  + (e.VendorNum || "") + '</a>' + '&nbsp;&nbsp;';
+					      				});
+					      				append += '</p></td>';
+					      				append += appendNum + '</p></td>';
+					      			}
+					      		    else {
+					      		    	append += '<p class="mbr-text mbr-fonts-style align-center display-7"></p></td>'
+					      		    	append += '<td id="" class="">'
+					      		    		   	+ '<p class="mbr-text mbr-fonts-style align-center display-7"></p></td>'
+					      		    }
+					      			break;
+				      			// HANDLE EDIT LINK
+					      		case (arr.length-1):
+				      				append += '<div class="mbr-col mbr-section-btn align-center field">' 
+					      				+ '<a href="' + (element[el] || "") + '" target="_blank"  class="btn-sm btn-form btn-info-outline display-4">'
+					      				+  '<span class="mbri-share mbr-iconfont mbr-iconfont-btn"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32" fill="currentColor"><path d="M23.333 1.333c-0.368 0-0.667 0.313-0.667 0.667v4.667c-1.924 0.138-3.319 0.538-5.305 2.362s-2.699 5.131-2.695 7.638c0.001 0.775 1.106 0.92 1.31 0.172 0.648-2.42 2.423-3.591 4.122-4.214 1.35-0.494 2.112-0.475 2.568-0.497v4.539c-0.001 0.58 0.689 0.884 1.117 0.492l8-7.333c0.289-0.264 0.289-0.72 0-0.984l-8-7.333c-0.133-0.122-0.27-0.185-0.451-0.174zM24 3.516l6.346 5.818-6.346 5.818v-3.818c-0-0.368-0.299-0.667-0.667-0.667 0 0-1.75-0.003-3.693 0.708-1.077 0.394-2.176 1.118-3.133 2.102 0.402-1.454 0.768-2.477 1.797-3.505s3.177-1.971 5.029-1.971c0.368-0 0.667-0.298 0.667-0.667zM2 8c-1.096 0-2 0.904-2 2v18.667c0 	1.096 0.904 2 2 2h26.667c1.096 0 2-0.904 2-2v-12c0.013-0.902-1.346-0.902-1.333 0v12c0 0.381-0.286 0.667-0.667 0.667h-26.667c-0.381 0-0.667-0.286-0.667-0.667v-18.667c0-0.381 0.286-0.667 0.667-0.667h12c0.912 0 0.85-1.333 0-1.333z"></path></svg></span></a></div>' + '</td>';
+					      			break;
+					      		default:
+					      			append += '<p class="mbr-text mbr-fonts-style align-center display-7">'
+					      				+ (element[el] || "") + '</p>' + '</td>';
+					      	}
+
+					     });
+						append += '</tr>';
+				      	table.append(append);	
+			      	});
+			    }
+			    else {
+				    table.append('<tr><td colspan="11"> (No Results Found) </td></tr>');
+			    }
+			  })
+		      .catch(err => {$('#mrclistBody tr').remove();$('#mrclistBody').append('<tr><td colspan="12">An Error occurred: '+err+'</td></tr>')} );
+		})
+	}
+
+	async function vdlistSearch() {
+		$('#vdlistBody tr').remove();
+		$('#vdlistBody').append( SPINNER );
+		$('#vdlistTitle').next('div').show('slow'); $(this).find('.arrow').toggleClass('active');
+		Promise.resolve().then( () => {
+			var input = $('#searchInput').val();
+			var search = ListMaster.vdlist;
+		// set up Query Filter
+			search.queryFilter = '';
+			if(input.length <= 0) {/* Don't set up a query filter */}
+			else {
+				search.myFieldsToSearch.forEach( (element, index, arr) => { 
+					index !== (arr.length - 1)
+					? search.queryFilter += "substringof('" + input +"',"+ element +") or "
+					: search.queryFilter += "substringof('" + input +"',"+ element +")";
+				});
+				// handle 2ndary search for Vendor Names by ID
+				var k = vlistReferenceMaster.length;
+				while (--k >= 0){
+					if (vlistReferenceMaster[k].Title.toUpperCase().includes(input.toUpperCase()) || vlistReferenceMaster[k].VendorNum == input )
+						search.queryFilter += " or Vendor_x0020_Name0Id eq " + vlistReferenceMaster[k].Id
+				}
+			}
+		// Query List
+			sprLib.list(ListMaster.vdlist.myName)
+		      .items(ListMaster.vdlist)
+		      .then(objList => {
+		      	$('#vdlistBody tr').remove();
+		      	var table = $('#vdlistBody');
+
+		      	if (objList.length > 0) {
+			      	objList.forEach((element, index) => {
+			      		var append = '<tr id="vdlistRow' + index + '">';
+			      		var keys = Object.keys(element);
+			      		var f = keys.indexOf('__next');
+			      		if(f >= 0 && f < keys.length) { keys.splice(f,1); }
+			      		keys.slice(3).forEach((el, idx, arr) => {
+				      		append += '<td id="' + ListMaster.vdlist.myFieldsCss[idx].id + index 
+					      			+ '" class="' + ListMaster.vdlist.myFieldsCss[idx].class + '">'
+
+					      	switch(idx){
+					      		case 2: // HANDLE VENDOR && VENDOR NUMBER
+					      			if (element[el]){
+					      				var appendNum = '<td id="" class="' + ListMaster.vdlist.myFieldsCss[idx].class + '">'
+					      				   			  + '<p class="mbr-text mbr-fonts-style align-center display-7">';
+					      				append += '<p class="mbr-text mbr-fonts-style align-center display-7">';
+					      				element[el].forEach( (e, i ,a) => {
+					      					append += '<a href="' + ListMaster.vlist.relativeItem + e.Id + '" target="_blank" >'
+				      								+ (e.Title || "") + '</a>' + '&nbsp;&nbsp;';
+				      						appendNum += '<a href="' + ListMaster.vlist.relativeItem + e.Id + '" target="_blank" >'
+				      					   			  + (e.VendorNum || "") + '</a>' + '&nbsp;&nbsp;';
+					      				});
+					      				append += '</p></td>';
+					      				append += appendNum + '</p></td>';
+					      			}
+					      		    else {
+					      		    	append += '<p class="mbr-text mbr-fonts-style align-center display-7"></p></td>'
+					      		    	append += '<td id="" class="' + ListMaster.vdlist.myFieldsCss[idx].class + '">'
+					      		    		   	+ '<p class="mbr-text mbr-fonts-style align-center display-7"></p></td>'
+					      		    }
+					      			break;
+					      		case 3: // HANDLE MODIFIED
+
+				     //  			case x: // HANDLE MODIFIED BY
+				     //  				var editor = "";
+				     //  				var obj = { id: element[el], baseURL:'/sites/sales' };
+				     //  				sprLib.user(obj).info()
+									// 	.then( (objUser) => editor = objUser.Title.slice() );
+									
+									// append += '<p class="mbr-text mbr-fonts-style align-center display-7">'
+					    //   					+ editor + '</p>' + '</td>';
+				      				break;
+					      		case (arr.length-1): // HANDLE EDIT LINK
+				      				append += '<div class="mbr-col mbr-section-btn align-center field">' 
+					      				+ '<a href="' + (element[el] || "") + '" target="_blank"  class="btn-sm btn-form btn-info-outline display-4">'
+					      				+  '<span class="mbri-share mbr-iconfont mbr-iconfont-btn"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32" fill="currentColor"><path d="M23.333 1.333c-0.368 0-0.667 0.313-0.667 0.667v4.667c-1.924 0.138-3.319 0.538-5.305 2.362s-2.699 5.131-2.695 7.638c0.001 0.775 1.106 0.92 1.31 0.172 0.648-2.42 2.423-3.591 4.122-4.214 1.35-0.494 2.112-0.475 2.568-0.497v4.539c-0.001 0.58 0.689 0.884 1.117 0.492l8-7.333c0.289-0.264 0.289-0.72 0-0.984l-8-7.333c-0.133-0.122-0.27-0.185-0.451-0.174zM24 3.516l6.346 5.818-6.346 5.818v-3.818c-0-0.368-0.299-0.667-0.667-0.667 0 0-1.75-0.003-3.693 0.708-1.077 0.394-2.176 1.118-3.133 2.102 0.402-1.454 0.768-2.477 1.797-3.505s3.177-1.971 5.029-1.971c0.368-0 0.667-0.298 0.667-0.667zM2 8c-1.096 0-2 0.904-2 2v18.667c0 	1.096 0.904 2 2 2h26.667c1.096 0 2-0.904 2-2v-12c0.013-0.902-1.346-0.902-1.333 0v12c0 0.381-0.286 0.667-0.667 0.667h-26.667c-0.381 0-0.667-0.286-0.667-0.667v-18.667c0-0.381 0.286-0.667 0.667-0.667h12c0.912 0 0.85-1.333 0-1.333z"></path></svg></span></a></div>' + '</td>';
+					      			break;
+					      		default:
+					      			append += '<p class="mbr-text mbr-fonts-style align-center display-7">'
+					      				+ (element[el] || "") + '</p>' + '</td>';
+					      	}
+					     });
+						append += '</tr>';
+				      	table.append(append);	
+			      	});
+			    }
+			    else {
+				    table.append('<tr><td colspan="11"> (No Results Found) </td></tr>');
+			    }
+			  })
+		      .catch(err => {$('#vdlistBody tr').remove();$('#vdlistBody').append('<tr><td colspan="12">An Error occurred: '+err+'</td></tr>')} );
+		})
+	}
+
 	async function doSearch() {
 		await Promise.all([	vlistSearch(), 
-							vclistSearch()]);
+							vclistSearch(),
+							mrlistSearch(),
+							mrclistSearch(),
+							vdlistSearch()
+						]);
 
 	}
 
@@ -2163,7 +2500,9 @@
 			<div class="row">
 				<div id="searchLists" class="col-8">
 					<label for="searchInput" class="text-muted text-uppercase d-block">Search</label>
-					<input id="searchInput" class="form-control w-100" type="text">
+					<input id="searchInput" class="form-control w-100" type="text" chars="valid-only" >
+					<span id="searchValidation" validation-for="searchInput" style="color: red;display: none" >Please don't enter special characters like '&' and ' as they can break the server, thank you!
+					</span>
 				</div>
 			</div>
 			
@@ -2236,16 +2575,139 @@
                         </th><th>
                             <p class="mbr-text tabletitle mbr-fonts-style mbr-white align-center display-7">Keywords</p>
                         </th><th class="view-show-all">
-                            <p class="mbr-text tabletitle mbr-fonts-style mbr-white align-center display-7">Link</p>
+                            <p class="mbr-text tabletitle mbr-fonts-style mbr-white align-center display-7">Edit</p>
                         </th>
                         </tr>
                     </thead>
                     <tbody id="vclistBody"></tbody>
 				</table>
 			</div>
-			
-		</div>
+
+			<h5 id="mrlistTitle" class="text-primary bde-arrow-cont mt-4" onclick="$(this).next('div').toggle('slow'); $(this).find('.arrow').toggleClass('active');" title="Click to Show/Hide">
+				<div class="arrow"></div>Manufacturer Reps List
+			</h5>
+			<div id="" class="container-fluid" style="display:none">
+				<table id="vclistTable" class="tabModern">
+					<thead>
+					<tr>
+                        <th class="view-medium">
+                                <p class="mbr-text tabletitle mbr-fonts-style mbr-white align-center display-7">Logo</p>
+                            </th><th class="view-tiny">
+                                <p class="mbr-text tabletitle mbr-fonts-style mbr-white align-center display-7">Manufacturer Rep</p>
+                            </th><th class="view-tiny">
+                                <p class="mbr-text tabletitle mbr-fonts-style mbr-white align-center display-7">Manufacturer Rep#</p>
+                            </th><th class="view-tiny">
+                                <p class="mbr-text tabletitle mbr-fonts-style mbr-white align-center display-7">Email</p>
+                            </th><th class="view-tiny">
+                                <p class="mbr-text tabletitle mbr-fonts-style mbr-white align-center display-7">Vendor Name</p>
+                            </th><th class="view-small">
+                                <p class="mbr-text tabletitle mbr-fonts-style mbr-white align-center display-7">Vendor #</p>
+                            </th><th class="view-medium">
+                                <p class="mbr-text tabletitle mbr-fonts-style mbr-white align-center display-7">Keywords</p>
+                            </th><th class="view-show-all">
+                            <p class="mbr-text tabletitle mbr-fonts-style mbr-white align-center display-7">Edit</p>
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody id="mrlistBody"></tbody>
+                </table>
+			</div>
+
+			<h5 id="mrclistTitle" class="text-primary bde-arrow-cont mt-4" onclick="$(this).next('div').toggle('slow'); $(this).find('.arrow').toggleClass('active');" title="Click to Show/Hide">
+				<div class="arrow"></div>Manufacturer Reps Contact List
+			</h5>
+			<div id="" class="container-fluid" style="display:none">
+				<table id="mrclistTable" class="tabModern">
+					<thead>
+					<tr>
+                        <th class="view-tiny">
+                            <p class="mbr-text tabletitle mbr-fonts-style mbr-white align-center display-7">First</p>
+                        </th><th class="view-tiny">
+                            <p class="mbr-text tabletitle mbr-fonts-style mbr-white align-center display-7">Last</p>
+                        </th><th>
+                            <p class="mbr-text tabletitle mbr-fonts-style mbr-white align-center display-7">Job Title</p>
+                        </th><th class="view-small">
+                            <p class="mbr-text tabletitle mbr-fonts-style mbr-white align-center display-7">Email</p>
+                        </th><th class="view-medium">
+                            <p class="mbr-text tabletitle mbr-fonts-style mbr-white align-center display-7">Business Phone #</p>
+                        </th><th>
+                            <p class="mbr-text tabletitle mbr-fonts-style mbr-white align-center display-7">Cell #</p>
+                        </th><th class="view-tiny">
+                            <p class="mbr-text tabletitle mbr-fonts-style mbr-white align-center display-7">Manufacturer Rep</p>
+                        </th><th class="view-medium">
+                            <p class="mbr-text tabletitle mbr-fonts-style mbr-white align-center display-7">Vendor Name</p>
+                        </th><th class="view-medium">
+                            <p class="mbr-text tabletitle mbr-fonts-style mbr-white align-center display-7">Vendor #</p>
+                        </th><th class="view-show-all">
+                            <p class="mbr-text tabletitle mbr-fonts-style mbr-white align-center display-7">Edit</p>
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody id="mrclistBody"></tbody>
+                </table>
+			</div>
+
+			<h5 id="vdlistTitle" class="text-primary bde-arrow-cont mt-4" onclick="$(this).next('div').toggle('slow'); $(this).find('.arrow').toggleClass('active');" title="Click to Show/Hide">
+				<div class="arrow"></div>Vendor Documents
+			</h5>
+			<div id="" class="container-fluid" style="display:none">
+				<table id="vdlistTable" class="tabModern">
+					<thead>
+					<tr>
+			                                    
+                    <th class="view-tiny">
+                            <p class="mbr-text tabletitle mbr-fonts-style mbr-white align-center display-7">Name</p>
+                        </th><th class="view-medium">
+                            <p class="mbr-text tabletitle mbr-fonts-style mbr-white align-center display-7">Type</p>
+                        </th><th class="view-tiny">
+                            <p class="mbr-text tabletitle mbr-fonts-style mbr-white align-center display-7">Vendor Name</p>
+                        </th><th class="view-medium">
+                            <p class="mbr-text tabletitle mbr-fonts-style mbr-white align-center display-7">Vendor #</p>
+                        </th><th class="view-small">
+                            <p class="mbr-text tabletitle mbr-fonts-style mbr-white align-center display-7">Modified</p>
+                        </th><th class="view-tiny">
+                            <p class="mbr-text tabletitle mbr-fonts-style mbr-white align-center display-7">Modified by</p>
+                        </th><th class="view-medium">
+                            <p class="mbr-text tabletitle mbr-fonts-style mbr-white align-center display-7">Keywords</p>
+                        </th><th class="view-show-all">
+                        	<p class="mbr-text tabletitle mbr-fonts-style mbr-white align-center display-7">Link</p>
+                    	</th>
+                    </tr>
+                    </thead>
+                    <tbody id="vdlistBody"></tbody>
+                </table>
+			</div>
+
 	</div>
-	
+	<script type="text/javascript">
+	/*********************************************************
+	- Author: Sebastian Cubillos
+	- Github: @tianes
+	- Comment: Don't re-invent the wheel, thanks @tianes
+	**********************************************************/
+		$(document).on('keyup change input', '[chars]', function(event) {
+
+		  var $elem = $(this),
+		    value = $elem.val(),
+		    regReplace,
+		    preset = {
+		      'numbers-only': '0-9',
+		      'letters': 'A-Za-z\\s',
+		      'email': '\\wÑñ@._\\-',
+		      'valid-only': '\\w\\s\,\.\-',
+		    },
+		    filter = preset[$elem.attr('chars')] || $elem.attr('chars');
+
+		  regReplace = new RegExp('[^' + filter + ']', 'ig');
+
+		  // KEEPS TRIGGERING ON '-' character. Need to fix.
+		  //regReplace.test(value) ? "" : $('#searchValidation').show().fadeOut(5000);
+
+		  $elem.val(value.replace(regReplace, ''));
+		  
+		  
+
+		});
+	</script>
 </body>
 </html>
