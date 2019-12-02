@@ -1402,14 +1402,14 @@
 			listCols :  {
 				aa:{ dataName: 'Vendor_x0020_Name' },
 				a: { dataName: 'Id' },
-				b: { dataName: 'Suggested_x0020_Sales_x0020_Mult '},
-				c: { dataName: 'Cost_x0020_Info' },
-				d: { dataName: 'Freight_x0020_Info' },
-				e: { dataName: 'Return_x0020_Information' },
-				f: { dataName: 'Comments' },
-				g: { dataFunc: findVendor },
+				b: { dataFunc: findVendor }
+				c: { dataName: 'Suggested_x0020_Sales_x0020_Mult'},
+				d: { dataName: 'Cost_x0020_Info' },
+				e: { dataName: 'Freight_x0020_Info' },
+				f: { dataName: 'Return_x0020_Information' },
+				g: { dataName: 'Comments' },
 				h: { dataName: 'Keywords' },
-				k: { dataFunc:  objItem => ListMaster.vdetails.relativeItem+objItem.ID }
+				i: { dataFunc:  objItem => ListMaster.vdetails.relativeItem+objItem.ID }
 			},
 			queryFilter: '',
 			queryOrderBy: 'Vendor_x0020_Name',
@@ -1417,15 +1417,13 @@
 			// Keep track of which fields in vlist we want to search when we search
 			myFieldsToSearch: ['Keywords'],
 			myFieldsCss: [
-				{ id: 'vdetailsFirst', class: 'view-tiny' },
-				{ id: 'vdetailsLast', class: 'view-tiny' },
-				{ id: 'vdetailsTitle', class: '' },
-				{ id: 'vdetailsEmail', class: 'view-small' },
-				{ id: 'vdetailsPhone', class: 'view-medium' },
-				{ id: 'vdetailsCell', class: '' },
-				{ id: 'vdetailsManRep', class: 'view-tiny' },
-				{ id: 'vdetailsVendor', class: 'view-medium' },
-				{ id: 'vdetailsEdit', class: 'view-show-all' },
+				{ id: 'vdetailsVendor', class: 'view-tiny' },
+				{ id: 'vdetailMulti', class: 'view-tiny' },
+				{ id: 'vdetailCost', class: 'view-medium' },
+				{ id: 'vdetailFreight', class: 'view-small' },
+				{ id: 'vdetailReturn', class: 'view-medium' },
+				{ id: 'vdetailComments', class: 'view-medium' },
+				{ id: 'vdetailKeys', class: '' },
 			],
 			myName: 'Vendor Details',
 			relativeList: '/sites/Sales/Lists/Vendor%20Details/Default%20View.aspx',
@@ -1952,19 +1950,13 @@
 			      		var f = keys.indexOf('__next');
 			      		if(f >= 0 && f < keys.length) { keys.splice(f,1); }
 			      		keys.slice(2).forEach((el, idx, arr) => {
-				      		append += '<td id="' + ListMaster.mrlist.myFieldsCss[idx].id + index 
-					      			+ '" class="' + ListMaster.mrlist.myFieldsCss[idx].class + '">'
+				      		append += '<td id="' + ListMaster.vdetails.myFieldsCss[idx].id + index 
+					      			+ '" class="' + ListMaster.vdetails.myFieldsCss[idx].class + '">'
 
-					      	switch(idx){
-					      		case 0: // LOGO
-					      			if(element[el])
-						      			append += '<img style="" src="' + (element[el].Url || "") + '"></td>';
-						      		else
-						      			append += '<img style="" src=""></td>';
-					      			break; 
-					      		case 4: // HANDLE VENDOR && VENDOR NUMBER
+					      	switch(idx){ 
+					      		case 0: // HANDLE VENDOR && VENDOR NUMBER
 					      			if (element[el]){
-					      				var appendNum = '<td id="" class="' + ListMaster.mrlist.myFieldsCss[idx].class + '">'
+					      				var appendNum = '<td id="" class="' + ListMaster.vdetails.myFieldsCss[idx].class + '">'
 					      				   			  + '<p class="mbr-text mbr-fonts-style align-center display-7">';
 					      				append += '<p class="mbr-text mbr-fonts-style align-center display-7">';
 					      				element[el].forEach( (e, i ,a) => {
@@ -1978,7 +1970,7 @@
 					      			}
 					      		    else {
 					      		    	append += '<p class="mbr-text mbr-fonts-style align-center display-7"></p></td>'
-					      		    	append += '<td id="" class="' + ListMaster.mrlist.myFieldsCss[idx].class + '">'
+					      		    	append += '<td id="" class="' + ListMaster.vdetails.myFieldsCss[idx].class + '">'
 					      		    		   	+ '<p class="mbr-text mbr-fonts-style align-center display-7"></p></td>'
 					      		    }
 					      			break;
@@ -2000,7 +1992,7 @@
 				    table.append('<tr><td colspan="11"> (No Results Found) </td></tr>');
 			    }
 			  })
-		      .catch(err => {$('#mrlistBody tr').remove();$('#mrlistBody').append('<tr><td colspan="12">An Error occurred: '+err+'</td></tr>')} );
+		      .catch(err => {$('#vdetailsBody tr').remove();$('#vdetailsBody').append('<tr><td colspan="12">An Error occurred: '+err+'</td></tr>')} );
 		})
 	}
 
@@ -2811,6 +2803,50 @@
                     <tbody id="vdlistBody"></tbody>
                 </table>
 			</div>
+
+			<h5 id="vdetailsTitle" class="text-primary bde-arrow-cont mt-4" onclick="$(this).next('div').toggle('slow'); $(this).find('.arrow').toggleClass('active');" title="Click to Show/Hide">
+				<div class="arrow"></div>Vendor Details
+			</h5>
+			<div id="" class="container-fluid" style="display:none">
+				<table id="vdetailsTable" class="tabModern">
+					 <thead>
+                        <tr>
+                            
+                        <th class="view-tiny">
+                            <p class="mbr-text tabletitle mbr-fonts-style mbr-white align-center display-7">Vendor Name</p>
+                        </th><th class="view-tiny">
+                            <p class="mbr-text tabletitle mbr-fonts-style mbr-white align-center display-7">Vendor #</p>
+                        </th><th class="view-tiny">
+                            <p class="mbr-text tabletitle mbr-fonts-style mbr-white align-center display-7">Suggested Sales Multiplier</p>
+                        </th><th class="view-medium">
+                            <p class="mbr-text tabletitle mbr-fonts-style mbr-white align-center display-7">Cost Info</p>
+                        </th><th class="view-small">
+                            <p class="mbr-text tabletitle mbr-fonts-style mbr-white align-center display-7">Freight Info</p>
+                        </th><th class="view-medium">
+                            <p class="mbr-text tabletitle mbr-fonts-style mbr-white align-center display-7">Return Info</p>
+                        </th><th class="view-medium">
+                            <p class="mbr-text tabletitle mbr-fonts-style mbr-white align-center display-7">Comments</p>
+                        </th><th>
+                            <p class="mbr-text tabletitle mbr-fonts-style mbr-white align-center display-7">Keywords</p>
+                        </th><th class="view-show-all">
+                        	<p class="mbr-text tabletitle mbr-fonts-style mbr-white align-center display-7">Link</p>
+                    	</th>
+
+                        </tr>
+                    </thead>
+                    <tbody id="vdetailsBody"></tbody>
+				</table>
+			</div>
+
+
+
+
+
+
+
+
+
+
 
 	</div>
 	<script type="text/javascript">
