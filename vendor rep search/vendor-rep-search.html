@@ -1400,9 +1400,9 @@
 		},
 		vdetails: {
 			listCols :  {
-				aa:{ dataName: 'Vendor_x0020_Name' },
+				aa:{ dataName: 'Vendor_x0020_NameId' },
 				a: { dataName: 'Id' },
-				b: { dataFunc: findVendor }
+				b: { dataFunc: findVendor },
 				c: { dataName: 'Suggested_x0020_Sales_x0020_Mult'},
 				d: { dataName: 'Cost_x0020_Info' },
 				e: { dataName: 'Freight_x0020_Info' },
@@ -1412,24 +1412,56 @@
 				i: { dataFunc:  objItem => ListMaster.vdetails.relativeItem+objItem.ID }
 			},
 			queryFilter: '',
-			queryOrderBy: 'Vendor_x0020_Name',
+			queryOrderBy: 'Vendor_x0020_NameId',
 			queryLimit: MANREP_LIMIT,
 			// Keep track of which fields in vlist we want to search when we search
 			myFieldsToSearch: ['Keywords'],
 			myFieldsCss: [
 				{ id: 'vdetailsVendor', class: 'view-tiny' },
-				{ id: 'vdetailMulti', class: 'view-tiny' },
-				{ id: 'vdetailCost', class: 'view-medium' },
-				{ id: 'vdetailFreight', class: 'view-small' },
-				{ id: 'vdetailReturn', class: 'view-medium' },
-				{ id: 'vdetailComments', class: 'view-medium' },
-				{ id: 'vdetailKeys', class: '' },
+				{ id: 'vdetailsMulti', class: 'view-tiny' },
+				{ id: 'vdetailsCost', class: 'view-medium' },
+				{ id: 'vdetailsFreight', class: 'view-small' },
+				{ id: 'vdetailsReturn', class: 'view-medium' },
+				{ id: 'vdetailsComments', class: 'view-medium' },
+				{ id: 'vdetailsKeys', class: '' },
+				{ id: 'vdetailsEdit', class: 'view-show-all' },
 			],
 			myName: 'Vendor Details',
 			relativeList: '/sites/Sales/Lists/Vendor%20Details/Default%20View.aspx',
 			relativeItem: '/sites/Sales/Lists/Vendor%20Details/DispForm.aspx?ID='
 		},
-
+		products: {
+			listCols :  {
+				aa:{ dataName: 'Vendor_x0020_NameId' },
+				a: { dataName: 'Id' },
+				b: { dataFunc: findVendor },
+				c: { dataName: 'Product_x0020_Line'},
+				d: { dataName: 'Description' },
+				e: { dataName: 'Whse' },
+				f: { dataName: 'Buyer' },
+				g: { dataName: 'Buyer_x0020_Initials' },
+				h: { dataName: 'Keywords' },
+				i: { dataFunc:  objItem => ListMaster.products.relativeItem+objItem.ID }
+			},
+			queryFilter: '',
+			queryOrderBy: 'Product_x0020_Line',
+			queryLimit: MANREP_LIMIT,
+			// Keep track of which fields in vlist we want to search when we search
+			myFieldsToSearch: ['Keywords', 'Description'],
+			myFieldsCss: [
+				{ id: 'productsVendor', class: 'view-tiny' },
+				{ id: 'productsMulti', class: 'view-tiny' },
+				{ id: 'productsCost', class: 'view-medium' },
+				{ id: 'productsFreight', class: 'view-small' },
+				{ id: 'productsReturn', class: 'view-medium' },
+				{ id: 'productsComments', class: 'view-medium' },
+				{ id: 'productsKeys', class: '' },
+				{ id: 'vdlistEdit', class: 'view-show-all' },
+			],
+			myName: 'Product Line List',
+			relativeList: '/sites/Sales/Lists/Product%20Line%20List/Default%20View.aspx',
+			relativeItem: '/sites/Sales/Lists/Product%20Line%20List/DispForm.aspx?ID='
+		},
 	};
 
 	function findManufactureRep(objItem) {
@@ -1437,14 +1469,13 @@
 			return mrlistReferenceMaster.find( (e) => e.Id == objItem.ManufacturerRep0Id ) || "Not Found"
 		else
 			return mrlistReferenceMaster.find( (e) => e.Id == objItem.ManufacturerRepId ) || "Not Found"
-
 	}
 
 	function findVendor(objItem, opts) {
 		if(objItem.hasOwnProperty('Vendor_x0020_Name0Id')) 
 			return vlistReferenceMaster.find( (e) => e.Id == opts.many ) || "Not Found"
-		else if (objItem.hasOwnProperty('Vendor_x0020_Name'))
-			return vlistReferenceMaster.find( (e) => e.Id == objItem.Vendor_x0020_Name ) || "Not Found"
+		else if (objItem.hasOwnProperty('Vendor_x0020_NameId'))
+			return vlistReferenceMaster.find( (e) => e.Id == objItem.Vendor_x0020_NameId ) || null
 		else 
 			return vlistReferenceMaster.find( (e) => e.Id == objItem.Vendor_x0020_Name_x0020_NEWId ) || "Not Found"
 	}
@@ -1514,6 +1545,16 @@
 						      			append += '<img style="" src="' + (element[el].Url || "") + '"></td>';
 						      		else
 						      			append += '<img style="" src=""></td>';
+					      			break;
+					      		case 1: 
+					      			append += '<p class="mbr-text mbr-fonts-style align-center display-7">'
+						      				+ '<a href="' + ListMaster.vlist.relativeItem + element['a'] + '" target="_blank" >'
+					      					+ (element[el] || "") + '</a></p></td>';
+					      			break;
+					      		case 2: 
+					      			append += '<p class="mbr-text mbr-fonts-style align-center display-7">'
+						      				+ '<a href="' + ListMaster.vlist.relativeItem + element['a'] + '" target="_blank" >'
+					      					+ (element[el] || "") + '</a></p></td>';
 					      			break;	
 					      		case 6: //MANREP
 					      			if (element[el].Id){
@@ -1675,6 +1716,11 @@
 						      			append += '<img style="" src="' + (element[el].Url || "") + '"></td>';
 						      		else
 						      			append += '<img style="" src=""></td>';
+					      			break;
+					      		case 1:
+					      			append += '<p class="mbr-text mbr-fonts-style align-center display-7">'
+						      				+ '<a href="' + ListMaster.mrlist.relativeItem + element['a'] + '" target="_blank" >'
+					      					+ (element[el] || "") + '</a></p></td>';
 					      			break; 
 					      		case 4: // HANDLE VENDOR && VENDOR NUMBER
 					      			if (element[el]){
@@ -1933,7 +1979,7 @@
 				var k = vlistReferenceMaster.length;
 				while (--k >= 0){
 					if (vlistReferenceMaster[k].Title.toUpperCase().includes(input.toUpperCase()) || vlistReferenceMaster[k].VendorNum == input )
-						search.queryFilter += " or Vendor_x0020_Name eq " + vlistReferenceMaster[k].Id
+						search.queryFilter += " or Vendor_x0020_NameId eq " + vlistReferenceMaster[k].Id
 				}
 			}
 		// Query List
@@ -1956,17 +2002,13 @@
 					      	switch(idx){ 
 					      		case 0: // HANDLE VENDOR && VENDOR NUMBER
 					      			if (element[el]){
-					      				var appendNum = '<td id="" class="' + ListMaster.vdetails.myFieldsCss[idx].class + '">'
-					      				   			  + '<p class="mbr-text mbr-fonts-style align-center display-7">';
-					      				append += '<p class="mbr-text mbr-fonts-style align-center display-7">';
-					      				element[el].forEach( (e, i ,a) => {
-					      					append += '<a href="' + ListMaster.vlist.relativeItem + e.Id + '" target="_blank" >'
-				      								+ (e.Title || "") + '</a>' + '&nbsp;&nbsp;';
-				      						appendNum += '<a href="' + ListMaster.vlist.relativeItem + e.Id + '" target="_blank" >'
-				      					   			  + (e.VendorNum || "") + '</a>' + '&nbsp;&nbsp;';
-					      				});
-					      				append += '</p></td>';
-					      				append += appendNum + '</p></td>';
+					      				append += '<p class="mbr-text mbr-fonts-style align-center display-7">'
+					      						+ '<a href="' + ListMaster.vlist.relativeItem + element[el].Id + '" target="_blank" >'
+					      						+ (element[el].Title || "") + '</a></p></td>';
+					      				append += '<td id="" class="' + ListMaster.vclist.myFieldsCss[idx].class + '">'
+						      				   	+ '<p class="mbr-text mbr-fonts-style align-center display-7">'
+						      				   	+ '<a href="' + ListMaster.vlist.relativeItem + element[el].Id + '" target="_blank" >'
+					      					   	+ (element[el].VendorNum || "") + '</a></p></td>';
 					      			}
 					      		    else {
 					      		    	append += '<p class="mbr-text mbr-fonts-style align-center display-7"></p></td>'
@@ -1996,13 +2038,93 @@
 		})
 	}
 
+	async function productsSearch() {
+		$('#productsBody tr').remove();
+		$('#productsBody').append( SPINNER );
+		$('#productsTitle').next('div').show('slow'); $(this).find('.arrow').toggleClass('active');
+		Promise.resolve().then( () => {
+			var input = $('#searchInput').val();
+			var search = ListMaster.products;
+		// set up Query Filter
+			search.queryFilter = '';
+			if(input.length <= 0) {/* Don't set up a query filter */}
+			else {
+				search.myFieldsToSearch.forEach( (element, index, arr) => { 
+					index !== (arr.length - 1)
+					? search.queryFilter += "substringof('" + input +"',"+ element +") or "
+					: search.queryFilter += "substringof('" + input +"',"+ element +")";
+				});
+				// handle 2ndary search for Vendor Names by ID
+				var k = vlistReferenceMaster.length;
+				while (--k >= 0){
+					if (vlistReferenceMaster[k].Title.toUpperCase().includes(input.toUpperCase()) || vlistReferenceMaster[k].VendorNum == input )
+						search.queryFilter += " or Vendor_x0020_NameId eq " + vlistReferenceMaster[k].Id
+				}
+			}
+		// Query List
+			sprLib.list(ListMaster.products.myName)
+		      .items(ListMaster.products)
+		      .then(objList => {
+		      	$('#productsBody tr').remove();
+		      	var table = $('#productsBody');
+
+		      	if (objList.length > 0) {
+			      	objList.forEach((element, index) => {
+			      		var append = '<tr id="productsRow' + index + '">';
+			      		var keys = Object.keys(element);
+			      		var f = keys.indexOf('__next');
+			      		if(f >= 0 && f < keys.length) { keys.splice(f,1); }
+			      		keys.slice(2).forEach((el, idx, arr) => {
+				      		append += '<td id="' + ListMaster.products.myFieldsCss[idx].id + index 
+					      			+ '" class="' + ListMaster.products.myFieldsCss[idx].class + '">'
+
+					      	switch(idx){ 
+					      		case 0: // HANDLE VENDOR && VENDOR NUMBER
+					      			if (element[el]){
+					      				append += '<p class="mbr-text mbr-fonts-style align-center display-7">'
+					      						+ '<a href="' + ListMaster.vlist.relativeItem + element[el].Id + '" target="_blank" >'
+					      						+ (element[el].Title || "") + '</a></p></td>';
+					      				append += '<td id="" class="' + ListMaster.vclist.myFieldsCss[idx].class + '">'
+						      				   	+ '<p class="mbr-text mbr-fonts-style align-center display-7">'
+						      				   	+ '<a href="' + ListMaster.vlist.relativeItem + element[el].Id + '" target="_blank" >'
+					      					   	+ (element[el].VendorNum || "") + '</a></p></td>';
+					      			}
+					      		    else {
+					      		    	append += '<p class="mbr-text mbr-fonts-style align-center display-7"></p></td>'
+					      		    	append += '<td id="" class="' + ListMaster.products.myFieldsCss[idx].class + '">'
+					      		    		   	+ '<p class="mbr-text mbr-fonts-style align-center display-7"></p></td>'
+					      		    }
+					      			break;
+					      		case (arr.length-1): // HANDLE EDIT LINK
+				      				append += '<div class="mbr-col mbr-section-btn align-center field">' 
+					      				+ '<a href="' + (element[el] || "") + '" target="_blank"  class="btn-sm btn-form btn-info-outline display-4">'
+					      				+  '<span class="mbri-share mbr-iconfont mbr-iconfont-btn"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32" fill="currentColor"><path d="M23.333 1.333c-0.368 0-0.667 0.313-0.667 0.667v4.667c-1.924 0.138-3.319 0.538-5.305 2.362s-2.699 5.131-2.695 7.638c0.001 0.775 1.106 0.92 1.31 0.172 0.648-2.42 2.423-3.591 4.122-4.214 1.35-0.494 2.112-0.475 2.568-0.497v4.539c-0.001 0.58 0.689 0.884 1.117 0.492l8-7.333c0.289-0.264 0.289-0.72 0-0.984l-8-7.333c-0.133-0.122-0.27-0.185-0.451-0.174zM24 3.516l6.346 5.818-6.346 5.818v-3.818c-0-0.368-0.299-0.667-0.667-0.667 0 0-1.75-0.003-3.693 0.708-1.077 0.394-2.176 1.118-3.133 2.102 0.402-1.454 0.768-2.477 1.797-3.505s3.177-1.971 5.029-1.971c0.368-0 0.667-0.298 0.667-0.667zM2 8c-1.096 0-2 0.904-2 2v18.667c0 	1.096 0.904 2 2 2h26.667c1.096 0 2-0.904 2-2v-12c0.013-0.902-1.346-0.902-1.333 0v12c0 0.381-0.286 0.667-0.667 0.667h-26.667c-0.381 0-0.667-0.286-0.667-0.667v-18.667c0-0.381 0.286-0.667 0.667-0.667h12c0.912 0 0.85-1.333 0-1.333z"></path></svg></span></a></div>' + '</td>';
+					      			break;
+					      		default:
+					      			append += '<p class="mbr-text mbr-fonts-style align-center display-7">'
+					      				+ (element[el] || "") + '</p>' + '</td>';
+					      	}
+					     });
+						append += '</tr>';
+				      	table.append(append);	
+			      	});
+			    }
+			    else {
+				    table.append('<tr><td colspan="11"> (No Results Found) </td></tr>');
+			    }
+			  })
+		      .catch(err => {$('#productsBody tr').remove();$('#productsBody').append('<tr><td colspan="12">An Error occurred: '+err+'</td></tr>')} );
+		})
+	}
 
 	async function doSearch() {
 		await Promise.all([	vlistSearch(), 
 							vclistSearch(),
 							mrlistSearch(),
 							mrclistSearch(),
-							//vdlistSearch()
+							//vdlistSearch(),
+							vdetailsSearch(),
+							productsSearch()
 						]);
 
 	}
@@ -2796,7 +2918,7 @@
                         </th><th class="view-medium">
                             <p class="mbr-text tabletitle mbr-fonts-style mbr-white align-center display-7">Keywords</p>
                         </th><th class="view-show-all">
-                        	<p class="mbr-text tabletitle mbr-fonts-style mbr-white align-center display-7">Link</p>
+                        	<p class="mbr-text tabletitle mbr-fonts-style mbr-white align-center display-7">Edit</p>
                     	</th>
                     </tr>
                     </thead>
@@ -2829,7 +2951,7 @@
                         </th><th>
                             <p class="mbr-text tabletitle mbr-fonts-style mbr-white align-center display-7">Keywords</p>
                         </th><th class="view-show-all">
-                        	<p class="mbr-text tabletitle mbr-fonts-style mbr-white align-center display-7">Link</p>
+                        	<p class="mbr-text tabletitle mbr-fonts-style mbr-white align-center display-7">Edit</p>
                     	</th>
 
                         </tr>
@@ -2838,15 +2960,39 @@
 				</table>
 			</div>
 
+			<h5 id="productsTitle" class="text-primary bde-arrow-cont mt-4" onclick="$(this).next('div').toggle('slow'); $(this).find('.arrow').toggleClass('active');" title="Click to Show/Hide">
+				<div class="arrow"></div>Product Line List
+			</h5>
+			<div id="" class="container-fluid" style="display:none">
+				<table id="productsTable" class="tabModern">
+					 <thead>
+                        <tr>
+                            
+                        <th class="view-tiny">
+                            <p class="mbr-text tabletitle mbr-fonts-style mbr-white align-center display-7">Vendor Name</p>
+                        </th><th class="view-tiny">
+                            <p class="mbr-text tabletitle mbr-fonts-style mbr-white align-center display-7">Vendor #</p>
+                        </th><th class="view-tiny">
+                            <p class="mbr-text tabletitle mbr-fonts-style mbr-white align-center display-7">Product Line</p>
+                        </th><th class="view-medium">
+                            <p class="mbr-text tabletitle mbr-fonts-style mbr-white align-center display-7">Description</p>
+                        </th><th class="view-small">
+                            <p class="mbr-text tabletitle mbr-fonts-style mbr-white align-center display-7">Warehouse</p>
+                        </th><th class="view-medium">
+                            <p class="mbr-text tabletitle mbr-fonts-style mbr-white align-center display-7">Buyer</p>
+                        </th><th class="view-medium">
+                            <p class="mbr-text tabletitle mbr-fonts-style mbr-white align-center display-7">Buyer Initials</p>
+                        </th><th>
+                            <p class="mbr-text tabletitle mbr-fonts-style mbr-white align-center display-7">Keywords</p>
+                        </th><th class="view-show-all">
+                        	<p class="mbr-text tabletitle mbr-fonts-style mbr-white align-center display-7">Edit</p>
+                    	</th>
 
-
-
-
-
-
-
-
-
+                        </tr>
+                    </thead>
+                    <tbody id="productsBody"></tbody>
+				</table>
+			</div>
 
 	</div>
 	<script type="text/javascript">
