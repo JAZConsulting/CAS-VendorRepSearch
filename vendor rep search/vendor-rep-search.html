@@ -1206,7 +1206,16 @@
 			else {
 				doPageLoad();
 			}
+
 		});
+
+		// ==================================================================================================================
+		$(document).keypress(function(e){
+			// BIND ENTER KEY TO THE SEARCH BUTTON
+    			if (e.which == 13){
+        			$("#searchInputBtn").click();
+    			}
+			});
 	</script>
 	<script>
 	// Author: Johnathan Zamora
@@ -1389,6 +1398,39 @@
 			relativeList: '/sites/Sales/Vendor%20Documents/Forms/Default View.aspx',
 			relativeItem: '/sites/Sales/Vendor%20Documents/Forms/Default%20View.aspx?RootFolder=%2Fsites%2FSales%2FVendor%20Documents&view=7&q='
 		},
+		vdetails: {
+			listCols :  {
+				aa:{ dataName: 'Vendor_x0020_Name' },
+				a: { dataName: 'Id' },
+				b: { dataName: 'Suggested_x0020_Sales_x0020_Mult '},
+				c: { dataName: 'Cost_x0020_Info' },
+				d: { dataName: 'Freight_x0020_Info' },
+				e: { dataName: 'Return_x0020_Information' },
+				f: { dataName: 'Comments' },
+				g: { dataFunc: findVendor },
+				h: { dataName: 'Keywords' },
+				k: { dataFunc:  objItem => ListMaster.vdetails.relativeItem+objItem.ID }
+			},
+			queryFilter: '',
+			queryOrderBy: 'Vendor_x0020_Name',
+			queryLimit: MANREP_LIMIT,
+			// Keep track of which fields in vlist we want to search when we search
+			myFieldsToSearch: ['Keywords'],
+			myFieldsCss: [
+				{ id: 'vdetailsFirst', class: 'view-tiny' },
+				{ id: 'vdetailsLast', class: 'view-tiny' },
+				{ id: 'vdetailsTitle', class: '' },
+				{ id: 'vdetailsEmail', class: 'view-small' },
+				{ id: 'vdetailsPhone', class: 'view-medium' },
+				{ id: 'vdetailsCell', class: '' },
+				{ id: 'vdetailsManRep', class: 'view-tiny' },
+				{ id: 'vdetailsVendor', class: 'view-medium' },
+				{ id: 'vdetailsEdit', class: 'view-show-all' },
+			],
+			myName: 'Vendor Details',
+			relativeList: '/sites/Sales/Lists/Vendor%20Details/Default%20View.aspx',
+			relativeItem: '/sites/Sales/Lists/Vendor%20Details/DispForm.aspx?ID='
+		},
 
 	};
 
@@ -1403,6 +1445,8 @@
 	function findVendor(objItem, opts) {
 		if(objItem.hasOwnProperty('Vendor_x0020_Name0Id')) 
 			return vlistReferenceMaster.find( (e) => e.Id == opts.many ) || "Not Found"
+		else if (objItem.hasOwnProperty('Vendor_x0020_Name'))
+			return vlistReferenceMaster.find( (e) => e.Id == objItem.Vendor_x0020_Name ) || "Not Found"
 		else 
 			return vlistReferenceMaster.find( (e) => e.Id == objItem.Vendor_x0020_Name_x0020_NEWId ) || "Not Found"
 	}
@@ -1871,12 +1915,102 @@
 		})
 	}
 
+	async function vdetailsSearch() {
+		$('#vdetailsBody tr').remove();
+		$('#vdetailsBody').append( SPINNER );
+		$('#vdetailsTitle').next('div').show('slow'); $(this).find('.arrow').toggleClass('active');
+		Promise.resolve().then( () => {
+			var input = $('#searchInput').val();
+			var search = ListMaster.vdetails;
+		// set up Query Filter
+			search.queryFilter = '';
+			if(input.length <= 0) {/* Don't set up a query filter */}
+			else {
+				search.myFieldsToSearch.forEach( (element, index, arr) => { 
+					index !== (arr.length - 1)
+					? search.queryFilter += "substringof('" + input +"',"+ element +") or "
+					: search.queryFilter += "substringof('" + input +"',"+ element +")";
+				});
+				// handle 2ndary search for Vendor Names by ID
+				var k = vlistReferenceMaster.length;
+				while (--k >= 0){
+					if (vlistReferenceMaster[k].Title.toUpperCase().includes(input.toUpperCase()) || vlistReferenceMaster[k].VendorNum == input )
+						search.queryFilter += " or Vendor_x0020_Name eq " + vlistReferenceMaster[k].Id
+				}
+			}
+		// Query List
+			sprLib.list(ListMaster.vdetails.myName)
+		      .items(ListMaster.vdetails)
+		      .then(objList => {
+		      	$('#vdetailsBody tr').remove();
+		      	var table = $('#vdetailsBody');
+
+		      	if (objList.length > 0) {
+			      	objList.forEach((element, index) => {
+			      		var append = '<tr id="vdetailsRow' + index + '">';
+			      		var keys = Object.keys(element);
+			      		var f = keys.indexOf('__next');
+			      		if(f >= 0 && f < keys.length) { keys.splice(f,1); }
+			      		keys.slice(2).forEach((el, idx, arr) => {
+				      		append += '<td id="' + ListMaster.mrlist.myFieldsCss[idx].id + index 
+					      			+ '" class="' + ListMaster.mrlist.myFieldsCss[idx].class + '">'
+
+					      	switch(idx){
+					      		case 0: // LOGO
+					      			if(element[el])
+						      			append += '<img style="" src="' + (element[el].Url || "") + '"></td>';
+						      		else
+						      			append += '<img style="" src=""></td>';
+					      			break; 
+					      		case 4: // HANDLE VENDOR && VENDOR NUMBER
+					      			if (element[el]){
+					      				var appendNum = '<td id="" class="' + ListMaster.mrlist.myFieldsCss[idx].class + '">'
+					      				   			  + '<p class="mbr-text mbr-fonts-style align-center display-7">';
+					      				append += '<p class="mbr-text mbr-fonts-style align-center display-7">';
+					      				element[el].forEach( (e, i ,a) => {
+					      					append += '<a href="' + ListMaster.vlist.relativeItem + e.Id + '" target="_blank" >'
+				      								+ (e.Title || "") + '</a>' + '&nbsp;&nbsp;';
+				      						appendNum += '<a href="' + ListMaster.vlist.relativeItem + e.Id + '" target="_blank" >'
+				      					   			  + (e.VendorNum || "") + '</a>' + '&nbsp;&nbsp;';
+					      				});
+					      				append += '</p></td>';
+					      				append += appendNum + '</p></td>';
+					      			}
+					      		    else {
+					      		    	append += '<p class="mbr-text mbr-fonts-style align-center display-7"></p></td>'
+					      		    	append += '<td id="" class="' + ListMaster.mrlist.myFieldsCss[idx].class + '">'
+					      		    		   	+ '<p class="mbr-text mbr-fonts-style align-center display-7"></p></td>'
+					      		    }
+					      			break;
+					      		case (arr.length-1): // HANDLE EDIT LINK
+				      				append += '<div class="mbr-col mbr-section-btn align-center field">' 
+					      				+ '<a href="' + (element[el] || "") + '" target="_blank"  class="btn-sm btn-form btn-info-outline display-4">'
+					      				+  '<span class="mbri-share mbr-iconfont mbr-iconfont-btn"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32" fill="currentColor"><path d="M23.333 1.333c-0.368 0-0.667 0.313-0.667 0.667v4.667c-1.924 0.138-3.319 0.538-5.305 2.362s-2.699 5.131-2.695 7.638c0.001 0.775 1.106 0.92 1.31 0.172 0.648-2.42 2.423-3.591 4.122-4.214 1.35-0.494 2.112-0.475 2.568-0.497v4.539c-0.001 0.58 0.689 0.884 1.117 0.492l8-7.333c0.289-0.264 0.289-0.72 0-0.984l-8-7.333c-0.133-0.122-0.27-0.185-0.451-0.174zM24 3.516l6.346 5.818-6.346 5.818v-3.818c-0-0.368-0.299-0.667-0.667-0.667 0 0-1.75-0.003-3.693 0.708-1.077 0.394-2.176 1.118-3.133 2.102 0.402-1.454 0.768-2.477 1.797-3.505s3.177-1.971 5.029-1.971c0.368-0 0.667-0.298 0.667-0.667zM2 8c-1.096 0-2 0.904-2 2v18.667c0 	1.096 0.904 2 2 2h26.667c1.096 0 2-0.904 2-2v-12c0.013-0.902-1.346-0.902-1.333 0v12c0 0.381-0.286 0.667-0.667 0.667h-26.667c-0.381 0-0.667-0.286-0.667-0.667v-18.667c0-0.381 0.286-0.667 0.667-0.667h12c0.912 0 0.85-1.333 0-1.333z"></path></svg></span></a></div>' + '</td>';
+					      			break;
+					      		default:
+					      			append += '<p class="mbr-text mbr-fonts-style align-center display-7">'
+					      				+ (element[el] || "") + '</p>' + '</td>';
+					      	}
+					     });
+						append += '</tr>';
+				      	table.append(append);	
+			      	});
+			    }
+			    else {
+				    table.append('<tr><td colspan="11"> (No Results Found) </td></tr>');
+			    }
+			  })
+		      .catch(err => {$('#mrlistBody tr').remove();$('#mrlistBody').append('<tr><td colspan="12">An Error occurred: '+err+'</td></tr>')} );
+		})
+	}
+
+
 	async function doSearch() {
 		await Promise.all([	vlistSearch(), 
 							vclistSearch(),
 							mrlistSearch(),
 							mrclistSearch(),
-							vdlistSearch()
+							//vdlistSearch()
 						]);
 
 	}
@@ -2506,7 +2640,7 @@
 				</div>
 			</div>
 			
-			<button type="button" class="btn btn-info mt-2 mb-4 w-25" style="max-width:500px" onclick="doSearch()"><span class="mbri-search mbr-iconfont mbr-iconfont-btn"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32" fill="currentColor"><path d="M10.875 17.534l-10.024 10.002c-1.192 1.19-1.033 2.844-0.138 3.745s2.55 1.062 3.747-0.135l9.987-9.987c0.654-0.628-0.336-1.575-0.943-0.943l-9.987 9.987c-0.772 0.772-1.425 0.575-1.859 0.138s-0.627-1.101 0.135-1.862l10.024-10.002c0.56-0.56-0.336-1.549-0.943-0.943zM20.266 2.742c-1.925 0.259-3.756 1.212-5.083 2.807-0.569 0.684 0.435 1.564 1.026 0.854 2.219-2.667 6.095-3.188 8.94-1.203 0.729 0.509 1.492-0.585 0.763-1.094-1.702-1.187-3.721-1.624-5.646-1.365zM21.333 0c-5.883 0-10.667 4.783-10.667 10.667s4.784 10.667 10.667 10.667c5.883 0 10.667-4.783 10.667-10.667s-4.784-10.667-10.667-10.667zM21.333 1.333c5.163 0 9.333 4.171 9.333 9.333s-4.171 9.333-9.333 9.333c-5.163 0-9.333-4.171-9.333-9.333s4.171-9.333 9.333-9.333z"></path></svg></span>
+			<button id="searchInputBtn" type="button" class="btn btn-info mt-2 mb-4 w-25" style="max-width:500px" onclick="doSearch()"><span class="mbri-search mbr-iconfont mbr-iconfont-btn"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32" fill="currentColor"><path d="M10.875 17.534l-10.024 10.002c-1.192 1.19-1.033 2.844-0.138 3.745s2.55 1.062 3.747-0.135l9.987-9.987c0.654-0.628-0.336-1.575-0.943-0.943l-9.987 9.987c-0.772 0.772-1.425 0.575-1.859 0.138s-0.627-1.101 0.135-1.862l10.024-10.002c0.56-0.56-0.336-1.549-0.943-0.943zM20.266 2.742c-1.925 0.259-3.756 1.212-5.083 2.807-0.569 0.684 0.435 1.564 1.026 0.854 2.219-2.667 6.095-3.188 8.94-1.203 0.729 0.509 1.492-0.585 0.763-1.094-1.702-1.187-3.721-1.624-5.646-1.365zM21.333 0c-5.883 0-10.667 4.783-10.667 10.667s4.784 10.667 10.667 10.667c5.883 0 10.667-4.783 10.667-10.667s-4.784-10.667-10.667-10.667zM21.333 1.333c5.163 0 9.333 4.171 9.333 9.333s-4.171 9.333-9.333 9.333c-5.163 0-9.333-4.171-9.333-9.333s4.171-9.333 9.333-9.333z"></path></svg></span>
 			&nbsp; Search</button>
 <!-- VENDOR LIST -->
 			<h5 id="vlistTitle" class="text-primary bde-arrow-cont mt-4" onclick="$(this).next('div').toggle('slow'); $(this).find('.arrow').toggleClass('active');" title="Click to Show/Hide">
