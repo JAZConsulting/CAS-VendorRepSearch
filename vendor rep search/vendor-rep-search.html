@@ -1371,7 +1371,7 @@
 				aaa:{dataName: 'EditorId' },
 				aa:{ dataName: 'Vendor_x0020_Name0Id' },
 				a: { dataName: 'Id' },
-				b: { dataName: 'Title'},
+				b: { dataName: 'Document_x0020_Name'},
 				c: { dataName: 'Document_x0020_Type' },
 				d: { dataFunc: findManyVendors },
 				e: { dataFunc: findEditor,
@@ -1381,7 +1381,7 @@
 				k: { dataFunc:  objItem => ListMaster.vdlist.relativeItem+objItem.Title }
 			},
 			queryFilter: '',
-			queryOrderBy: 'Title',
+			queryOrderBy: 'Document_x0020_Name',
 			queryLimit: MANREP_LIMIT,
 			// Keep track of which fields in vlist we want to search when we search
 			myFieldsToSearch: ['Title'],
@@ -3016,13 +3016,11 @@
 
 		  regReplace = new RegExp('[^' + filter + ']', 'ig');
 
-		  // KEEPS TRIGGERING ON '-' character. Need to fix.
+		  // KEEPS TRIGGERING ON '-' character even though it passes validation... would be nice to fix at some point.
 		  //regReplace.test(value) ? "" : $('#searchValidation').show().fadeOut(5000);
 
 		  $elem.val(value.replace(regReplace, ''));
 		  
-		  
-
 		});
 	</script>
 </body>
