@@ -1342,7 +1342,7 @@
 				e: { dataName: 'Email_x0020_Address' },
 				f: { dataName: 'Business_x0020_Phone' },
 				g: { dataName: 'Mobile_x0020_Number' },
-				h: { dataFunc: findManufactureRepC },
+				h: { dataFunc: findManufactureRep },
 				i: { dataFunc: findManyVendors },
 				k: { dataFunc:  objItem => ListMaster.mrclist.relativeItem+objItem.ID }
 			},
@@ -1435,11 +1435,11 @@
 	};
 
 	function findManufactureRep(objItem) {
-		return mrlistReferenceMaster.find( (e) => e.Id == objItem.ManufacturerRep0Id ) || "Not Found"
-	}
-	// Stupid duplicate method because of Col Name difference
-	function findManufactureRepC(objItem) {
-		return mrlistReferenceMaster.find( (e) => e.Id == objItem.ManufacturerRepId ) || "Not Found"
+		if(objItem.hasOwnProperty('ManufacturerRep0Id')) 
+			return mrlistReferenceMaster.find( (e) => e.Id == objItem.ManufacturerRep0Id ) || "Not Found"
+		else
+			return mrlistReferenceMaster.find( (e) => e.Id == objItem.ManufacturerRepId ) || "Not Found"
+
 	}
 
 	function findVendor(objItem, opts) {
