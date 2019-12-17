@@ -283,6 +283,7 @@
 		td p {
 			overflow-wrap: break-word;
 			max-width: 250px;
+			font-size: .76rem
 		}
 	</style>
 
@@ -642,6 +643,11 @@
 		return usersReferenceMaster.find( e => e.Id == objItem.EditorId ) || null
 	}
 
+	function circleSearch(text) {
+		$('#searchInput').val(String(text));
+		doSearch();
+	}
+
 	async function vlistSearch() {
 		$('#vlistBody tr').remove();
 		$('#vlistBody').append( SPINNER );
@@ -702,7 +708,7 @@
 					      		case 5: //MANREP
 					      			if (element[el].Id){
 						      		    append += '<p class="mbr-text mbr-fonts-style align-center display-7">'
-					      					+ '<a href="' + ListMaster.mrlist.relativeItem + element[el].Id + '" target="_blank" >'
+					      					+ '<a href="#" onclick="circleSearch(\''+ element[el].ManufacturerRep + '\')" >'
 					      					+ element[el].ManufacturerRep + '</a></p></td>'
 					      			}
 					      			else
@@ -788,11 +794,11 @@
 					      		// HANDLE VENDOR && VENDOR NUMBER
 					      		case 7: 
 					      		    append += '<p class="mbr-text mbr-fonts-style align-center display-7">'
-				      						+ '<a href="' + ListMaster.vlist.relativeItem + element[el].Id + '" target="_blank" >'
+				      						+ '<a href="#" onclick="circleSearch(\'' + element[el].Title + '\')" >'
 				      						+ (element[el].Title || "") + '</a></p></td>';
 				      				append += '<td id="" class="' + ListMaster.vclist.myFieldsCss[idx].class + '">'
 					      				   	+ '<p class="mbr-text mbr-fonts-style align-center display-7">'
-					      				   	+ '<a href="' + ListMaster.vlist.relativeItem + element[el].Id + '" target="_blank" >'
+					      				   	+ '<a href="#" onclick="circleSearch(\'' + element[el].VendorNum + '\')" >'
 				      					   	+ (element[el].VendorNum || "") + '</a></p></td>';
 					      			break;
 				      			// HANDLE EDIT LINK
@@ -876,9 +882,9 @@
 					      				   			  + '<p class="mbr-text mbr-fonts-style align-center display-7">';
 					      				append += '<p class="mbr-text mbr-fonts-style align-center display-7">';
 					      				element[el].forEach( (e, i ,a) => {
-					      					append += '<a href="' + ListMaster.vlist.relativeItem + e.Id + '" target="_blank" >'
+					      					append += '<a href="#" onclick="circleSearch(\'' + e.Title +'\')" >'
 				      								+ (e.Title || "") + '</a>' + '&nbsp;&nbsp;';
-				      						appendNum += '<a href="' + ListMaster.vlist.relativeItem + e.Id + '" target="_blank" >'
+				      						appendNum += '<a href="#" onclick="circleSearch(\'' + e.VendorNum +'\')" >'
 				      					   			  + (e.VendorNum || "") + '</a>' + '&nbsp;&nbsp;';
 					      				});
 					      				append += '</p></td>';
@@ -967,7 +973,7 @@
 					      		case 6: // HANDLE MANREP
 					      			if (element[el].Id){
 						      		    append += '<p class="mbr-text mbr-fonts-style align-center display-7">'
-					      					+ '<a href="' + ListMaster.mrlist.relativeItem + element[el].Id + '" target="_blank" >'
+					      					+ '<a href="#" onclick="circleSearch(\'' + element[el].ManufacturerRep + '\')" >'
 					      					+ element[el].ManufacturerRep + '</a></p></td>';
 					      			}
 					      			else
@@ -979,9 +985,9 @@
 					      				   			  + '<p class="mbr-text mbr-fonts-style align-center display-7">';
 					      				append += '<p class="mbr-text mbr-fonts-style align-center display-7">';
 					      				element[el].forEach( (e, i ,a) => {
-					      					append += '<a href="' + ListMaster.vlist.relativeItem + e.Id + '" target="_blank" >'
+					      					append += '<a href="#" onclick="circleSearch(\'' + e.Title +'\')" >'
 				      								+ (e.Title || "") + '</a>' + '&nbsp;&nbsp;';
-				      						appendNum += '<a href="' + ListMaster.vlist.relativeItem + e.Id + '" target="_blank" >'
+				      						appendNum += '<a href="#" onclick="circleSearch(\'' + e.VendorNum +'\')" >'
 				      					   			  + (e.VendorNum || "") + '</a>' + '&nbsp;&nbsp;';
 					      				});
 					      				append += '</p></td>';
@@ -1068,9 +1074,9 @@
 					      				   			  + '<p class="mbr-text mbr-fonts-style align-center display-7">';
 					      				append += '<p class="mbr-text mbr-fonts-style align-center display-7">';
 					      				element[el].forEach( (e, i ,a) => {
-					      					append += '<a href="' + ListMaster.vlist.relativeItem + e.Id + '" target="_blank" >'
+					      					append += '<a href="#" onclick="circleSearch(\'' + e.Title +'\')" >'
 				      								+ (e.Title || "") + '</a>' + '&nbsp;&nbsp;';
-				      						appendNum += '<a href="' + ListMaster.vlist.relativeItem + e.Id + '" target="_blank" >'
+				      						appendNum += '<a href="#" onclick="circleSearch(\'' + e.VendorNum +'\')" >'
 				      					   			  + (e.VendorNum || "") + '</a>' + '&nbsp;&nbsp;';
 					      				});
 					      				append += '</p></td>';
@@ -1157,11 +1163,11 @@
 					      		case 0: // HANDLE VENDOR && VENDOR NUMBER
 					      			if (element[el]){
 					      				append += '<p class="mbr-text mbr-fonts-style align-center display-7">'
-					      						+ '<a href="' + ListMaster.vlist.relativeItem + element[el].Id + '" target="_blank" >'
+					      						+ '<a href="#" onclick="circleSearch(\'' + element[el].Title +'\')" >'
 					      						+ (element[el].Title || "") + '</a></p></td>';
 					      				append += '<td id="" class="' + ListMaster.vclist.myFieldsCss[idx].class + '">'
 						      				   	+ '<p class="mbr-text mbr-fonts-style align-center display-7">'
-						      				   	+ '<a href="' + ListMaster.vlist.relativeItem + element[el].Id + '" target="_blank" >'
+						      				   	+ '<a href="#" onclick="circleSearch(\'' + element[el].VendorNum +'\')" >'
 					      					   	+ (element[el].VendorNum || "") + '</a></p></td>';
 					      			}
 					      		    else {
@@ -1236,11 +1242,11 @@
 					      		case 0: // HANDLE VENDOR && VENDOR NUMBER
 					      			if (element[el]){
 					      				append += '<p class="mbr-text mbr-fonts-style align-center display-7">'
-					      						+ '<a href="' + ListMaster.vlist.relativeItem + element[el].Id + '" target="_blank" >'
+					      						+ '<a href="#" onclick="circleSearch(\'' + element[el].Title +'\')" >'
 					      						+ (element[el].Title || "") + '</a></p></td>';
 					      				append += '<td id="" class="' + ListMaster.vclist.myFieldsCss[idx].class + '">'
 						      				   	+ '<p class="mbr-text mbr-fonts-style align-center display-7">'
-						      				   	+ '<a href="' + ListMaster.vlist.relativeItem + element[el].Id + '" target="_blank" >'
+						      				   	+ '<a href="#" onclick="circleSearch(\'' + element[el].VendorNum +'\')" >'
 					      					   	+ (element[el].VendorNum || "") + '</a></p></td>';
 					      			}
 					      		    else {
