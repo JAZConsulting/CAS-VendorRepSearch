@@ -376,7 +376,7 @@
 			listCols :  {
 				aa: { dataName: 'ManufacturerRep0Id' },
 				a: 	{ dataName: 'Id'},
-				b: 	{ dataName: 'Logo'},
+				// b: 	{ dataName: 'Logo'},
 				c: 	{ dataName: 'Title' },
 				d: 	{ dataName: 'VendorNum' },
 				e: 	{ dataName: 'Placing_x0020_POs' },
@@ -395,7 +395,7 @@
 			myFieldsToSearch: ['Title', 'VendorNum', 'Keywords'],
 			// Keep track of CSS for viewports
 			myFieldsCss: [
-				{id:'vlistLogo', 	class:'view-small iconSvg'},
+				// {id:'vlistLogo', 	class:'view-small iconSvg'},
 				{id:'vlistVendor', 	class:'view-tiny'},
 				{id:'vlistVenNum', 	class:'view-medium'},
 				{id:'vlistPO', 		class:''},
@@ -451,7 +451,7 @@
 			listCols :  {
 				aa: { dataName: 'Vendor_x0020_Name0Id' },
 				a: 	{ dataName: 'Id'},
-				b: 	{ dataName: 'Logo'},
+				// b: 	{ dataName: 'Logo'},
 				c: 	{ dataName: 'ManufacturerRep' },
 				d: 	{ dataName: 'Manufacturer_x0020_Rep_x0020__x0' },
 				e: 	{ dataName: 'Email' },
@@ -466,7 +466,7 @@
 			myFieldsToSearch: ['ManufacturerRep', 'Keywords'],
 			// Keep track of CSS for viewports
 			myFieldsCss: [
-				{id:'mrlistLogo', 	class:'view-small iconSvg'},
+				// {id:'mrlistLogo', 	class:'view-small iconSvg'},
 				{id:'mrlistManRep',	class:'view-tiny'},
 				{id:'mrlistRepNum', class:'view-tiny'},
 				{id:'mrlistEmail', 	class:'view-medium'},
@@ -683,23 +683,23 @@
 					      			+ '" class="' + ListMaster.vlist.myFieldsCss[idx].class + '">'
 
 					      	switch(idx){
-					      		case 0: //LOGO
-					      			if(element[el])
-						      			append += '<img style="" src="' + (element[el].Url || "") + '"></td>';
-						      		else
-						      			append += '<img style="" src=""></td>';
-					      			break;
-					      		case 1: //VENDOR NAME
+					      		// case 0: //LOGO
+					      		// 	if(element[el])
+						      	// 		append += '<img style="" src="' + (element[el].Url || "") + '"></td>';
+						      	// 	else
+						      	// 		append += '<img style="" src=""></td>';
+					      		// 	break;
+					      		case 0: //VENDOR NAME
 					      			append += '<p class="mbr-text mbr-fonts-style align-center display-7">'
 						      				+ '<a href="' + ListMaster.vlist.relativeItem + element['a'] + '" target="_blank" >'
 					      					+ (element[el] || "") + '</a></p></td>';
 					      			break;
-					      		case 2: //VENDOR #
+					      		case 1: //VENDOR #
 					      			append += '<p class="mbr-text mbr-fonts-style align-center display-7">'
 						      				+ '<a href="' + ListMaster.vlist.relativeItem + element['a'] + '" target="_blank" >'
 					      					+ (element[el] || "") + '</a></p></td>';
 					      			break;	
-					      		case 6: //MANREP
+					      		case 5: //MANREP
 					      			if (element[el].Id){
 						      		    append += '<p class="mbr-text mbr-fonts-style align-center display-7">'
 					      					+ '<a href="' + ListMaster.mrlist.relativeItem + element[el].Id + '" target="_blank" >'
@@ -708,7 +708,7 @@
 					      			else
 					      				append += '<p class="mbr-text mbr-fonts-style align-center display-7"></p></td>'
 					      			break;
-					      		case 7://WEBSITE
+					      		case 6://WEBSITE
 					      			if (element[el]) {
 					      				append += '<p class="mbr-text mbr-fonts-style align-center display-7">'
 					      					+ '<a href="' + (element[el] || "") + '" target="_blank" >'
@@ -859,18 +859,18 @@
 					      			+ '" class="' + ListMaster.mrlist.myFieldsCss[idx].class + '">'
 
 					      	switch(idx){
-					      		case 0: // LOGO
-					      			if(element[el])
-						      			append += '<img style="" src="' + (element[el].Url || "") + '"></td>';
-						      		else
-						      			append += '<img style="" src=""></td>';
-					      			break;
-					      		case 1:
+					      		// case 0: // LOGO
+					      		// 	if(element[el])
+						      	// 		append += '<img style="" src="' + (element[el].Url || "") + '"></td>';
+						      	// 	else
+						      	// 		append += '<img style="" src=""></td>';
+					      		// 	break;
+					      		case 0:
 					      			append += '<p class="mbr-text mbr-fonts-style align-center display-7">'
 						      				+ '<a href="' + ListMaster.mrlist.relativeItem + element['a'] + '" target="_blank" >'
 					      					+ (element[el] || "") + '</a></p></td>';
 					      			break; 
-					      		case 4: // HANDLE VENDOR && VENDOR NUMBER
+					      		case 3: // HANDLE VENDOR && VENDOR NUMBER
 					      			if (element[el]){
 					      				var appendNum = '<td id="" class="' + ListMaster.mrlist.myFieldsCss[idx].class + '">'
 					      				   			  + '<p class="mbr-text mbr-fonts-style align-center display-7">';
@@ -1312,9 +1312,7 @@
 					<thead>
                         <tr>
 
-                        <th class="view-small">
-                                <p class="mbr-text tabletitle mbr-fonts-style mbr-white align-center display-7">Logo</p>
-                            </th><th class="view-tiny">
+							<th class="view-tiny">
                                 <p class="mbr-text tabletitle mbr-fonts-style mbr-white align-center display-7">Vendor Name</p>
                             </th><th class="view-medium">
                                 <p class="mbr-text tabletitle mbr-fonts-style mbr-white align-center display-7">Vendor #</p>
@@ -1385,9 +1383,7 @@
 				<table id="vclistTable" class="tabModern">
 					<thead>
 					<tr>
-                        <th class="view-medium">
-                                <p class="mbr-text tabletitle mbr-fonts-style mbr-white align-center display-7">Logo</p>
-                            </th><th class="view-tiny">
+							<th class="view-tiny">
                                 <p class="mbr-text tabletitle mbr-fonts-style mbr-white align-center display-7">Manufacturer Rep</p>
                             </th><th class="view-tiny">
                                 <p class="mbr-text tabletitle mbr-fonts-style mbr-white align-center display-7">Manufacturer Rep#</p>
