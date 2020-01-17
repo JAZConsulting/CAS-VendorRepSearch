@@ -543,7 +543,8 @@
 			],
 			myName: 'Vendor Documents',
 			relativeList: '/sites/Sales/Vendor%20Documents/Forms/Default View.aspx',
-			relativeItem: '/sites/Sales/Vendor%20Documents/'
+			relativeItem: '/sites/Sales/Vendor%20Documents/',
+			relativeItemEdit: '/sites/Sales/Vendor%20Documents/Forms/EditForm.aspx?ID='
 		},
 		vdetails: {
 			listCols :  {
@@ -1099,7 +1100,7 @@
 				      				break;
 					      		case (arr.length-1): // HANDLE EDIT LINK
 				      				append += '<div class="mbr-col mbr-section-btn align-center field">' 
-					      				+ '<a href="' + (element[el] || "") + '" target="_blank"  class="btn-sm btn-form btn-info-outline display-4">'
+					      				+ '<a href="' + ('/sites/Sales/Vendor%20Documents/Forms/Default%20View.aspx?id=%2Fsites%2FSales%2FVendor%20Documents%2F'+element['b']+'&parent=%2Fsites%2FSales%2FVendor%20Documents' || "") + '" target="_blank"  class="btn-sm btn-form btn-info-outline display-4">'
 					      				+  '<span class="mbri-share mbr-iconfont mbr-iconfont-btn"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32" fill="currentColor"><path d="M23.333 1.333c-0.368 0-0.667 0.313-0.667 0.667v4.667c-1.924 0.138-3.319 0.538-5.305 2.362s-2.699 5.131-2.695 7.638c0.001 0.775 1.106 0.92 1.31 0.172 0.648-2.42 2.423-3.591 4.122-4.214 1.35-0.494 2.112-0.475 2.568-0.497v4.539c-0.001 0.58 0.689 0.884 1.117 0.492l8-7.333c0.289-0.264 0.289-0.72 0-0.984l-8-7.333c-0.133-0.122-0.27-0.185-0.451-0.174zM24 3.516l6.346 5.818-6.346 5.818v-3.818c-0-0.368-0.299-0.667-0.667-0.667 0 0-1.75-0.003-3.693 0.708-1.077 0.394-2.176 1.118-3.133 2.102 0.402-1.454 0.768-2.477 1.797-3.505s3.177-1.971 5.029-1.971c0.368-0 0.667-0.298 0.667-0.667zM2 8c-1.096 0-2 0.904-2 2v18.667c0 	1.096 0.904 2 2 2h26.667c1.096 0 2-0.904 2-2v-12c0.013-0.902-1.346-0.902-1.333 0v12c0 0.381-0.286 0.667-0.667 0.667h-26.667c-0.381 0-0.667-0.286-0.667-0.667v-18.667c0-0.381 0.286-0.667 0.667-0.667h12c0.912 0 0.85-1.333 0-1.333z"></path></svg></span></a></div>' + '</td>';
 					      			break;
 					      		default:
@@ -1467,7 +1468,7 @@
                         </th><th class="view-medium">
                             <p class="mbr-text tabletitle mbr-fonts-style mbr-white align-center display-7">Keywords</p>
                         </th><th class="view-show-all">
-                        	<p class="mbr-text tabletitle mbr-fonts-style mbr-white align-center display-7">Download</p>
+                        	<p class="mbr-text tabletitle mbr-fonts-style mbr-white align-center display-7">Edit</p>
                     	</th>
                     </tr>
                     </thead>
